@@ -1,0 +1,10 @@
+# Development signing keys. A production key never touches a filesystem.
+.keys/
+
+# Published ruleset snapshots are build output here; in production they are
+# written to an immutable, versioned store.
+dist/
+
+# Go build artefacts
+*.test
+/setuctl

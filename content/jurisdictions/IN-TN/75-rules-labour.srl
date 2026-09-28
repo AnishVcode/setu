@@ -1,0 +1,51 @@
+package IN.TN
+
+// Social security registrations.
+
+rule R.EPF.REGISTRATION {
+  title en "Provident fund registration"
+  kind trigger
+  when profile.workers_total >= 20 workers
+  then { require approval IN.EPFO.REGISTRATION }
+  explain en "An establishment employing twenty or more persons must be registered under the Employees' Provident Funds Act, and contributions begin from the month the threshold is crossed."
+  legal_basis {
+    act "Employees' Provident Funds and Miscellaneous Provisions Act, 1952"
+    section "1(3)(b)"
+  }
+  owner "Regional Provident Fund Commissioner"
+  review_status unverified
+  review_cadence 1 year
+  test "twenty employees" {
+    given { profile.workers_total = 20 workers }
+    expect fires
+  }
+  test "nineteen employees" {
+    given { profile.workers_total = 19 workers }
+    expect not fires
+  }
+}
+
+rule R.ESI.REGISTRATION {
+  title en "Employees' State Insurance registration"
+  kind trigger
+  // Tamil Nadu has notified the Act for establishments employing ten or more.
+  when profile.workers_total >= 10 workers
+  then { require approval IN.ESIC.REGISTRATION }
+  explain en "An establishment employing ten or more persons in Tamil Nadu must be registered under the Employees' State Insurance Act within fifteen days of becoming liable."
+  legal_basis {
+    act "Employees' State Insurance Act, 1948"
+    section "2A"
+    rule "Employees' State Insurance (General) Regulations, 1950, Regulation 10B"
+  }
+  owner "Regional Director, ESIC"
+  review_status unverified
+  review_cadence 1 year
+  test "ten employees" {
+    given { profile.workers_total = 10 workers }
+    expect fires
+  }
+  test "nine employees" {
+    given { profile.workers_total = 9 workers }
+    expect not fires
+  }
+}

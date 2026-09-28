@@ -1,0 +1,62 @@
+package IN.TN
+
+// Baseline registrations that almost every unit needs.
+
+rule R.UDYAM.REGISTRATION {
+  title en "Udyam registration"
+  kind trigger
+  when profile.investment_plant_machinery <= INR 50 crore
+       and profile.annual_turnover <= INR 250 crore
+  then { require approval TN.UDYAM.REGISTRATION }
+  explain en "With investment of {profile.investment_plant_machinery} and turnover of {profile.annual_turnover}, the enterprise is within the MSME limits. Udyam registration is free, takes a day, and is the precondition for almost every state and central incentive."
+  legal_basis {
+    act "Micro, Small and Medium Enterprises Development Act, 2006"
+    section "8"
+    notification "S.O. 2119(E)"
+    dated 2020-06-26
+  }
+  owner "Development Commissioner (MSME)"
+  review_status unverified
+  review_cadence 1 year
+  test "a medium enterprise" {
+    given {
+      profile.investment_plant_machinery = INR 4 crore
+      profile.annual_turnover = INR 20 crore
+    }
+    expect fires
+  }
+  test "above the MSME limits" {
+    given {
+      profile.investment_plant_machinery = INR 80 crore
+      profile.annual_turnover = INR 400 crore
+    }
+    expect not fires
+  }
+}
+
+rule R.GST.REGISTRATION {
+  title en "GST registration"
+  kind trigger
+  // The threshold for a supplier of goods in Tamil Nadu is forty lakh rupees;
+  // an exporter must register whatever the turnover.
+  when profile.annual_turnover >= INR 40 lakh or profile.exports == true
+  then { require approval IN.GST.REGISTRATION }
+  explain en "Registration under the GST Acts is required because turnover of {profile.annual_turnover} crosses the threshold for a supplier of goods, or because the business exports."
+  legal_basis {
+    act "Central Goods and Services Tax Act, 2017"
+    section "22"
+    notification "No. 10/2019 — Central Tax"
+    dated 2019-03-07
+  }
+  owner "Commissioner of Commercial Taxes"
+  review_status unverified
+  review_cadence 1 year
+  test "above the threshold" {
+    given { profile.annual_turnover = INR 2 crore, profile.exports = false }
+    expect fires
+  }
+  test "small domestic supplier" {
+    given { profile.annual_turnover = INR 15 lakh, profile.exports = false }
+    expect not fires
+  }
+}

@@ -1,0 +1,201 @@
+package IN.TN
+
+// Planning, building and local body rules.
+
+rule R.PLANNING.CMDA {
+  title en "Planning permission inside the Chennai Metropolitan Area"
+  kind trigger
+  when within(profile.premise, "chennai_metropolitan_area")
+  then { require approval TN.PLANNING.BUILDING_CMDA }
+  explain en "Your site falls inside the Chennai Metropolitan Area, so planning permission comes from CMDA rather than the Directorate of Town and Country Planning."
+  legal_basis {
+    act "Tamil Nadu Town and Country Planning Act, 1971"
+    section "9-C"
+    rule "Chennai Metropolitan Development Authority Development Regulations"
+  }
+  owner "Director of Town and Country Planning"
+  review_status unverified
+  review_cadence 1 year
+  test "site in Chennai" {
+    given { profile.premise = point(13.08, 80.27) }
+    expect fires
+  }
+  test "site in Coimbatore" {
+    given { profile.premise = point(11.01, 76.95) }
+    expect not fires
+  }
+}
+
+rule R.PLANNING.DTCP {
+  title en "Planning permission outside the Chennai Metropolitan Area"
+  kind trigger
+  when not within(profile.premise, "chennai_metropolitan_area")
+  then { require approval TN.PLANNING.BUILDING_DTCP }
+  explain en "Any new industrial building needs planning permission before construction; outside the Chennai Metropolitan Area this comes from the local planning authority under the Directorate of Town and Country Planning."
+  legal_basis {
+    act "Tamil Nadu Town and Country Planning Act, 1971"
+    section "49"
+  }
+  owner "Director of Town and Country Planning"
+  review_status unverified
+  review_cadence 1 year
+  test "site in Coimbatore" {
+    given { profile.premise = point(11.01, 76.95) }
+    expect fires
+  }
+  test "site in Chennai" {
+    given { profile.premise = point(13.08, 80.27) }
+    expect not fires
+  }
+}
+
+rule R.FIRE.NOC.HIGH_RISK {
+  title en "Fire NOC for a factory or a large or tall building"
+  kind trigger
+  when required(TN.DISH.FACTORY_LICENCE)
+       or profile.built_up_area >= 500 m2
+       or profile.building_height >= 15 m
+  then { require approval TN.FIRE.NOC }
+  explain en "A no-objection certificate from the fire service is needed for a licensed factory, for a building over 500 square metres, or for a building 15 metres or taller."
+  legal_basis {
+    act "Tamil Nadu Fire Service Act, 1985"
+    section "13"
+    rule "Tamil Nadu Fire Service (Fire Prevention and Fire Safety) Rules"
+  }
+  owner "Director, Fire and Rescue Services"
+  review_status unverified
+  review_cadence 1 year
+  test "large building" {
+    given { profile.built_up_area = 1200 m2 }
+    expect fires
+  }
+  test "small workshop, no factory" {
+    given {
+      profile.built_up_area = 120 m2
+      profile.building_height = 6 m
+      profile.workers_total = 4 workers
+      profile.uses_power = false
+    }
+    expect not fires
+  }
+}
+
+rule R.TRADE.LICENCE {
+  title en "Trade licence from the local body"
+  kind trigger
+  when profile.local_body_type == LocalBodyType.MUNICIPAL_CORPORATION
+       or profile.local_body_type == LocalBodyType.MUNICIPALITY
+       or profile.local_body_type == LocalBodyType.TOWN_PANCHAYAT
+  then { require approval TN.LOCALBODY.TRADE_LICENCE }
+  explain en "Food manufacture is a listed trade, so the local body must licence the premises."
+  legal_basis {
+    act "Tamil Nadu District Municipalities Act, 1920"
+    section "249"
+  }
+  owner "Commissioner, Municipal Administration"
+  review_status unverified
+  review_cadence 1 year
+  test "in a municipality" {
+    given { profile.local_body_type = LocalBodyType.MUNICIPALITY }
+    expect fires
+  }
+  test "in a village panchayat" {
+    given { profile.local_body_type = LocalBodyType.VILLAGE_PANCHAYAT }
+    expect not fires
+  }
+}
+
+rule R.TRADE.LICENCE.INDUSTRIAL_ESTATE_EXEMPT {
+  title en "Units inside a notified industrial estate"
+  kind exemption
+  precedence 200
+  overrides [ R.TRADE.LICENCE ]
+  when profile.in_industrial_estate == true
+  then {
+    exempt approval TN.LOCALBODY.TRADE_LICENCE
+      reason en "The site is inside a notified industrial estate, where the estate authority discharges the local body's licensing function."
+  }
+  explain en "Units inside a notified industrial estate are licensed by the estate authority, not by the local body."
+  legal_basis {
+    act "Tamil Nadu District Municipalities Act, 1920"
+    section "249"
+    notification "Industrial estate notification"
+    dated 2021-04-01
+  }
+  owner "Commissioner, Municipal Administration"
+  review_status unverified
+  review_cadence 1 year
+  // REVIEW: the scope of this exemption differs between estate authorities and
+  // must be confirmed with Municipal Administration before publication.
+  test "inside an estate" {
+    given { profile.in_industrial_estate = true }
+    expect fires
+  }
+  test "outside an estate" {
+    given { profile.in_industrial_estate = false }
+    expect not fires
+  }
+}
+
+// Dependency edges to whichever planning authority has jurisdiction.
+//
+// A conditional edge exists only when its rule fires, which is how one approval
+// waits on the right one of two alternative authorities. Declaring both as
+// static prerequisites would require both, because a dependency means "cannot
+// be granted before", and two of those are cumulative.
+
+rule R.DEP.FIRE_ON_CMDA {
+  title en "The fire NOC waits on CMDA planning permission"
+  kind dependency
+  // Keyed on the site, not on required(TN.PLANNING.BUILDING_CMDA): a rule that
+  // feeds a dependency edge into an approval must not also read that
+  // approval's outcome, or the graph has no fixed point. The compiler rejects
+  // that as a cycle, which is how this was caught.
+  when within(profile.premise, "chennai_metropolitan_area")
+  then {
+    depend TN.FIRE.NOC on TN.PLANNING.BUILDING_CMDA
+      reason en "The fire service assesses the approved building plan, so CMDA planning permission must be granted first."
+  }
+  explain en "Inside the Chennai Metropolitan Area, the fire NOC follows CMDA's planning permission."
+  legal_basis {
+    act "Tamil Nadu Fire Service Act, 1985"
+    section "13"
+  }
+  owner "Director, Fire and Rescue Services"
+  review_status unverified
+  review_cadence 1 year
+  test "site in Chennai" {
+    given { profile.premise = point(13.08, 80.27) }
+    expect fires
+  }
+  test "site in Coimbatore" {
+    given { profile.premise = point(11.01, 76.95) }
+    expect not fires
+  }
+}
+
+rule R.DEP.FIRE_ON_DTCP {
+  title en "The fire NOC waits on DTCP planning permission"
+  kind dependency
+  when not within(profile.premise, "chennai_metropolitan_area")
+  then {
+    depend TN.FIRE.NOC on TN.PLANNING.BUILDING_DTCP
+      reason en "The fire service assesses the approved building plan, so planning permission must be granted first."
+  }
+  explain en "Outside the Chennai Metropolitan Area, the fire NOC follows the local planning authority's permission."
+  legal_basis {
+    act "Tamil Nadu Fire Service Act, 1985"
+    section "13"
+  }
+  owner "Director, Fire and Rescue Services"
+  review_status unverified
+  review_cadence 1 year
+  test "site in Coimbatore" {
+    given { profile.premise = point(11.01, 76.95) }
+    expect fires
+  }
+  test "site in Chennai" {
+    given { profile.premise = point(13.08, 80.27) }
+    expect not fires
+  }
+}

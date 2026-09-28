@@ -1,0 +1,193 @@
+package IN.TN
+
+// Recurring obligations.
+//
+// These are what the Compliance Twin materialises the moment a licence is
+// issued (spec 5.13). Each carries its own schedule, its evidence, and the
+// consequence of letting it lapse — because a calendar entry that does not say
+// what happens if you miss it is not a compliance tool, it is a reminder.
+
+obligation OBL.FACTORY.ANNUAL_RETURN {
+  title en "Annual return in Form 22"
+  cadence 1 year
+  due month 1 day 31
+  department TN.DISH
+  evidence [ DOC.WORKER_LIST ]
+  consequence en "Failure to file is an offence punishable under Section 92, and is taken into account when the licence is renewed."
+  legal_basis {
+    act "Factories Act, 1948"
+    section "88"
+    rule "Tamil Nadu Factories Rules, 1950, Rule 100"
+  }
+  owner "Joint Director (Licensing)"
+  review_status unverified
+  review_cadence 1 year
+}
+
+obligation OBL.FACTORY.LICENCE_RENEWAL {
+  title en "Renewal of the factory licence"
+  cadence 1 year
+  due month 12 day 31
+  department TN.DISH
+  consequence en "Operating a factory without a current licence is an offence under Section 92, and the premises may be sealed."
+  legal_basis {
+    act "Factories Act, 1948"
+    section "6"
+    rule "Tamil Nadu Factories Rules, 1950, Rule 7"
+  }
+  owner "Joint Director (Licensing)"
+  review_status unverified
+  review_cadence 1 year
+}
+
+obligation OBL.TNPCB.CTO_RENEWAL {
+  title en "Renewal of the consent to operate"
+  cadence 5 years
+  department TN.TNPCB
+  evidence [ DOC.WATER_ANALYSIS, DOC.EFFLUENT_PLAN ]
+  consequence en "Operating without a valid consent attracts closure directions under Section 33A of the Water Act and Section 31A of the Air Act."
+  legal_basis {
+    act "Water (Prevention and Control of Pollution) Act, 1974"
+    section "25"
+  }
+  owner "Joint Chief Environmental Engineer"
+  review_status unverified
+  review_cadence 1 year
+}
+
+obligation OBL.TNPCB.WATER_CESS_RETURN {
+  title en "Monthly water consumption return"
+  cadence 1 month
+  due_within 5 days
+  department TN.TNPCB
+  consequence en "A delayed or incorrect return attracts assessment on best judgement and interest on the shortfall."
+  legal_basis {
+    act "Water (Prevention and Control of Pollution) Cess Act, 1977"
+    section "5"
+  }
+  owner "Joint Chief Environmental Engineer"
+  review_status unverified
+  review_cadence 1 year
+}
+
+obligation OBL.FSSAI.ANNUAL_RETURN {
+  title en "Annual return in Form D1"
+  cadence 1 year
+  due month 5 day 31
+  department IN.FSSAI
+  consequence en "A late return attracts a penalty of one hundred rupees for each day of delay."
+  legal_basis {
+    act "Food Safety and Standards Act, 2006"
+    section "31"
+    rule "Food Safety and Standards (Licensing and Registration of Food Businesses) Regulations, 2011, Regulation 2.1.13"
+  }
+  owner "Designated Officer, Tamil Nadu"
+  review_status unverified
+  review_cadence 1 year
+}
+
+obligation OBL.FSSAI.LICENCE_RENEWAL {
+  title en "Renewal of the food licence"
+  cadence 1 year
+  department IN.FSSAI
+  evidence [ DOC.FOOD_SAFETY_PLAN, DOC.WATER_TEST_POTABLE ]
+  consequence en "Operating a food business without a current licence attracts a penalty of up to five lakh rupees and imprisonment under Section 63."
+  legal_basis {
+    act "Food Safety and Standards Act, 2006"
+    section "31"
+  }
+  owner "Designated Officer, Tamil Nadu"
+  review_status unverified
+  review_cadence 1 year
+}
+
+obligation OBL.BOILER.ANNUAL_INSPECTION {
+  title en "Annual inspection and renewal of the boiler certificate"
+  cadence 1 year
+  department TN.BOILERS
+  evidence [ DOC.BOILER_DRAWINGS ]
+  consequence en "Using a boiler without a valid certificate is an offence under Section 24 and the boiler may be sealed immediately."
+  legal_basis {
+    act "Boilers Act, 1923"
+    section "8"
+  }
+  owner "Chief Inspector of Boilers"
+  review_status unverified
+  review_cadence 1 year
+}
+
+obligation OBL.EPF.MONTHLY_ECR {
+  title en "Monthly electronic challan-cum-return"
+  cadence 1 month
+  due_within 15 days
+  department IN.EPFO
+  consequence en "Late remittance attracts damages under Section 14B and interest under Section 7Q."
+  legal_basis {
+    act "Employees' Provident Funds and Miscellaneous Provisions Act, 1952"
+    section "6"
+  }
+  owner "Regional Provident Fund Commissioner"
+  review_status unverified
+  review_cadence 1 year
+}
+
+obligation OBL.ESI.MONTHLY_CONTRIBUTION {
+  title en "Monthly ESI contribution"
+  cadence 1 month
+  due_within 15 days
+  department IN.ESIC
+  consequence en "Delayed contribution attracts interest at twelve per cent a year and damages under Regulation 31C."
+  legal_basis {
+    act "Employees' State Insurance Act, 1948"
+    section "39"
+  }
+  owner "Regional Director, ESIC"
+  review_status unverified
+  review_cadence 1 year
+}
+
+obligation OBL.HAZWASTE.ANNUAL_RETURN {
+  title en "Annual return in Form 4 on hazardous waste"
+  cadence 1 year
+  due month 6 day 30
+  department TN.TNPCB
+  evidence [ DOC.HAZWASTE_PLAN ]
+  consequence en "Failure to file may lead to cancellation of the authorisation and prosecution under Section 15 of the Environment (Protection) Act."
+  legal_basis {
+    act "Environment (Protection) Act, 1986"
+    section "8"
+    rule "Hazardous and Other Wastes (Management and Transboundary Movement) Rules, 2016, Rule 20"
+  }
+  owner "Joint Chief Environmental Engineer"
+  review_status unverified
+  review_cadence 1 year
+}
+
+obligation OBL.TRADE.LICENCE_RENEWAL {
+  title en "Renewal of the trade licence"
+  cadence 1 year
+  due month 3 day 31
+  department TN.LOCALBODY
+  consequence en "Carrying on a listed trade without a current licence attracts a penalty and closure under the local body's by-laws."
+  legal_basis {
+    act "Tamil Nadu District Municipalities Act, 1920"
+    section "249"
+  }
+  owner "Commissioner, Municipal Administration"
+  review_status unverified
+  review_cadence 1 year
+}
+
+obligation OBL.LEGALMETROLOGY.STAMPING {
+  title en "Periodic verification and stamping of weights and measures"
+  cadence 1 year
+  department TN.LEGALMETROLOGY
+  consequence en "Using an unverified weight or measure for trade is an offence under Section 33."
+  legal_basis {
+    act "Legal Metrology Act, 2009"
+    section "24"
+  }
+  owner "Controller of Legal Metrology"
+  review_status unverified
+  review_cadence 1 year
+}

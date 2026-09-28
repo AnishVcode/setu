@@ -1,0 +1,28 @@
+// SETU regulatory content — Tamil Nadu, food processing sector.
+//
+// ─────────────────────────────────────────────────────────────────────────────
+// REVIEW STATUS: UNVERIFIED. NOT LEGALLY CERTIFIED. NOT FOR PRODUCTION USE.
+//
+// Every declaration in this directory carries `review_status unverified`. The
+// publication gate (`setuctl publish --production`) refuses to publish a
+// ruleset containing unverified content, so this cannot reach an applicant by
+// accident. It exists to exercise the engine end to end and to give the
+// regulatory content team a worked, well-structured starting point.
+//
+// Before any of this becomes law-in-software, each rule must go through the
+// four-eyes workflow of spec 5.5.5: author, legal reviewer, department
+// sign-off. The thresholds and citations below were written from public
+// sources by an engineer, not a lawyer, and several are known to be
+// simplifications — they are flagged individually with a REVIEW note.
+// ─────────────────────────────────────────────────────────────────────────────
+
+package IN.TN
+
+meta {
+  title        "Tamil Nadu — food processing"
+  jurisdiction "IN.TN"
+  sector       "Food processing (NIC division 10)"
+  status       "DRAFT — unverified, not legally certified"
+  contact      "Regulatory Content Operations"
+  sources      "Central and State Acts and Rules as published; see legal_basis on each object"
+}

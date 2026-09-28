@@ -1,0 +1,127 @@
+package IN.TN
+
+// Schemes and entitlements.
+//
+// Eligibility runs on the same deterministic engine, over the same profile, as
+// the approvals (spec 5.14). That is what makes an entitlement explainable and
+// auditable rather than a leaflet: the applicant is told what they qualify for,
+// which provision says so, and what it is worth.
+
+incentive INC.TN.CAPITAL_SUBSIDY {
+  title en "Capital subsidy for micro and small enterprises"
+  scheme "Tamil Nadu MSME Policy"
+  department TN.MSME_DEPT
+  value = min(0.25 * profile.investment_plant_machinery, INR 30 lakh)
+  window from 2021-04-01 until 2027-03-31
+  evidence [ DOC.UDYAM, DOC.PROJECT_REPORT, DOC.EB_CARD ]
+  apply_url "https://msmeonline.tn.gov.in"
+  legal_basis {
+    act "Tamil Nadu Micro, Small and Medium Enterprises Policy, 2021"
+    section "Capital subsidy"
+  }
+  owner "Secretary, MSME Department"
+  review_status unverified
+  review_cadence 1 year
+}
+
+incentive INC.TN.AGRO_ADDITIONAL_SUBSIDY {
+  title en "Additional capital subsidy for agro and food processing"
+  scheme "Tamil Nadu MSME Policy — thrust sectors"
+  department TN.MSME_DEPT
+  value = min(0.05 * profile.investment_plant_machinery, INR 5 lakh)
+  window from 2021-04-01 until 2027-03-31
+  evidence [ DOC.UDYAM, DOC.PROJECT_REPORT ]
+  apply_url "https://msmeonline.tn.gov.in"
+  legal_basis {
+    act "Tamil Nadu Micro, Small and Medium Enterprises Policy, 2021"
+    section "Thrust sector additional subsidy"
+  }
+  owner "Secretary, MSME Department"
+  review_status unverified
+  review_cadence 1 year
+}
+
+incentive INC.TN.SPECIAL_CATEGORY_SUBSIDY {
+  title en "Additional subsidy for special category entrepreneurs"
+  scheme "Tamil Nadu MSME Policy — special categories"
+  department TN.MSME_DEPT
+  value = min(0.05 * profile.investment_plant_machinery, INR 5 lakh)
+  window from 2021-04-01 until 2027-03-31
+  evidence [ DOC.UDYAM ]
+  apply_url "https://msmeonline.tn.gov.in"
+  legal_basis {
+    act "Tamil Nadu Micro, Small and Medium Enterprises Policy, 2021"
+    section "Special category entrepreneurs"
+  }
+  owner "Secretary, MSME Department"
+  review_status unverified
+  review_cadence 1 year
+}
+
+incentive INC.IN.PMFME {
+  title en "Credit-linked subsidy for micro food processing enterprises"
+  scheme "PM Formalisation of Micro Food Processing Enterprises"
+  department IN.MSME
+  value = min(0.35 * profile.investment_plant_machinery, INR 10 lakh)
+  window from 2020-06-29 until 2026-03-31
+  evidence [ DOC.UDYAM, DOC.PROJECT_REPORT ]
+  apply_url "https://pmfme.mofpi.gov.in"
+  legal_basis {
+    act "PM Formalisation of Micro Food Processing Enterprises Scheme Guidelines"
+    section "Credit-linked capital subsidy"
+  }
+  owner "Development Commissioner (MSME)"
+  review_status unverified
+  review_cadence 1 year
+}
+
+incentive INC.TN.GENERATOR_SUBSIDY {
+  title en "Subsidy on the purchase of a generator set"
+  scheme "Tamil Nadu MSME Policy — generator subsidy"
+  department TN.MSME_DEPT
+  value = INR 5 lakh
+  window from 2021-04-01 until 2027-03-31
+  evidence [ DOC.PROJECT_REPORT, DOC.EB_CARD ]
+  apply_url "https://msmeonline.tn.gov.in"
+  legal_basis {
+    act "Tamil Nadu Micro, Small and Medium Enterprises Policy, 2021"
+    section "Generator subsidy"
+  }
+  owner "Secretary, MSME Department"
+  review_status unverified
+  review_cadence 1 year
+}
+
+incentive INC.TN.STAMP_DUTY_CONCESSION {
+  title en "Concession on stamp duty for industrial land"
+  scheme "Tamil Nadu MSME Policy — stamp duty concession"
+  department TN.MSME_DEPT
+  value = INR 1 lakh
+  window from 2021-04-01 until 2027-03-31
+  evidence [ DOC.LAND_TITLE, DOC.UDYAM ]
+  apply_url "https://msmeonline.tn.gov.in"
+  legal_basis {
+    act "Tamil Nadu Micro, Small and Medium Enterprises Policy, 2021"
+    section "Stamp duty concession"
+  }
+  owner "Secretary, MSME Department"
+  review_status unverified
+  review_cadence 1 year
+}
+
+incentive INC.TN.BACKWARD_AREA_SUBSIDY {
+  title en "Additional capital subsidy for industrially backward districts"
+  scheme "Tamil Nadu MSME Policy — spatial targeting"
+  department TN.MSME_DEPT
+  value = min(0.05 * profile.investment_plant_machinery, INR 5 lakh)
+  window from 2021-04-01 until 2027-03-31
+  evidence [ DOC.UDYAM, DOC.LAND_TITLE ]
+  apply_url "https://msmeonline.tn.gov.in"
+  legal_basis {
+    act "Tamil Nadu Micro, Small and Medium Enterprises Policy, 2021"
+    section "Industrially backward districts"
+  }
+  owner "Secretary, MSME Department"
+  review_status unverified
+  review_cadence 1 year
+}

@@ -1,0 +1,488 @@
+package IN.TN
+
+// Approval types.
+//
+// `deemed_approval` records whether the law permits an application to be
+// treated as granted when the statutory period expires, and cites the provision
+// that permits it. Where no provision exists it is `prohibited`, and the
+// orchestrator cannot be configured to grant one however long the department
+// takes (P3, spec 5.7). Silence is not consent unless a statute says it is.
+//
+// `depends_on` is a legal ordering constraint, not a workflow preference. It
+// means the second approval cannot be granted before the first, and it carries
+// the applicant-facing reason shown while a case is waiting.
+
+approval TN.UDYAM.REGISTRATION {
+  title en "Udyam registration"
+  summary en "The MSME registration that unlocks most state and central incentives."
+  category "registration"
+  department IN.MSME
+  jurisdiction IN.TN
+  sla 1 day
+  documents [ DOC.PAN, DOC.GSTIN ]
+  legal_basis {
+    act "Micro, Small and Medium Enterprises Development Act, 2006"
+    section "8"
+    notification "S.O. 2119(E)"
+    dated 2020-06-26
+  }
+  deemed_approval prohibited
+  effective from 2020-07-01
+  owner "Development Commissioner (MSME)"
+  review_status unverified
+  review_cadence 1 year
+}
+
+approval IN.GST.REGISTRATION {
+  title en "GST registration"
+  category "registration"
+  department IN.GSTN
+  jurisdiction IN.TN
+  sla 7 days
+  documents [ DOC.PAN, DOC.INCORPORATION, DOC.LAND_TITLE ]
+  legal_basis {
+    act "Central Goods and Services Tax Act, 2017"
+    section "22"
+    rule "Central Goods and Services Tax Rules, 2017, Rule 9"
+  }
+  // Rule 9(5) treats an application as approved if the officer does not act
+  // within the prescribed period.
+  deemed_approval permitted section "Rule 9(5)"
+  effective from 2017-07-01
+  owner "Commissioner of Commercial Taxes"
+  review_status unverified
+  review_cadence 1 year
+}
+
+approval TN.PLANNING.BUILDING_DTCP {
+  title en "Planning permission and building plan approval"
+  summary en "Permission to build, from the planning authority for the area."
+  category "permit"
+  department TN.DTCP
+  jurisdiction IN.TN
+  sla 30 days
+  validity 3 years
+  renewal { notice 90 days cadence 3 years }
+  documents [ DOC.LAND_TITLE, DOC.SITE_PLAN, DOC.PROJECT_REPORT ]
+  fees [ FEE.PLANNING.SCRUTINY ]
+  appeal { authority en "Director of Town and Country Planning" within 30 days }
+  legal_basis {
+    act "Tamil Nadu Town and Country Planning Act, 1971"
+    section "49"
+    rule "Tamil Nadu Combined Development and Building Rules, 2019"
+  }
+  deemed_approval prohibited
+  effective from 1972-01-01
+  owner "Director of Town and Country Planning"
+  review_status unverified
+  review_cadence 1 year
+}
+
+approval TN.PLANNING.BUILDING_CMDA {
+  title en "Planning permission — Chennai Metropolitan Area"
+  summary en "Planning permission inside the Chennai Metropolitan Area, issued by CMDA rather than the Directorate."
+  category "permit"
+  department TN.CMDA
+  jurisdiction IN.TN
+  sla 30 days
+  validity 3 years
+  renewal { notice 90 days cadence 3 years }
+  documents [ DOC.LAND_TITLE, DOC.SITE_PLAN, DOC.PROJECT_REPORT ]
+  fees [ FEE.PLANNING.SCRUTINY ]
+  appeal { authority en "Government of Tamil Nadu, Housing and Urban Development Department" within 30 days }
+  legal_basis {
+    act "Tamil Nadu Town and Country Planning Act, 1971"
+    section "49"
+    rule "Chennai Metropolitan Development Authority Development Regulations"
+  }
+  deemed_approval prohibited
+  effective from 1975-01-01
+  owner "Member Secretary, CMDA"
+  review_status unverified
+  review_cadence 1 year
+}
+
+approval TN.FIRE.NOC {
+  title en "Fire service no-objection certificate"
+  category "noc"
+  department TN.FIRE
+  jurisdiction IN.TN
+  sla 30 days
+  validity 1 year
+  renewal { notice 60 days cadence 1 year }
+  documents [ DOC.SITE_PLAN, DOC.FIRE_SAFETY_PLAN ]
+  fees [ FEE.FIRE.NOC ]
+  // The fire NOC waits on planning permission, but only on the one authority
+  // that actually has jurisdiction over the site. Declaring both here would
+  // make them cumulative — dependencies are conjunctive — so the edge is
+  // created conditionally by R.DEP.FIRE_ON_PLANNING instead.
+  appeal { authority en "Director, Fire and Rescue Services" within 30 days }
+  legal_basis {
+    act "Tamil Nadu Fire Service Act, 1985"
+    section "13"
+  }
+  deemed_approval prohibited
+  effective from 1985-01-01
+  owner "Director, Fire and Rescue Services"
+  review_status unverified
+  review_cadence 1 year
+}
+
+approval TN.DISH.FACTORY_PLAN {
+  title en "Approval of factory building plans"
+  summary en "Approval of the factory layout and machinery plan before construction."
+  category "permit"
+  department TN.DISH
+  jurisdiction IN.TN
+  sla 30 days
+  documents [ DOC.SITE_PLAN, DOC.MACHINERY_LAYOUT, DOC.PROJECT_REPORT ]
+  fees [ FEE.FACTORY.PLAN ]
+  appeal { authority en "Chief Inspector of Factories" within 30 days }
+  legal_basis {
+    act "Factories Act, 1948"
+    section "6"
+    rule "Tamil Nadu Factories Rules, 1950, Rule 3"
+  }
+  deemed_approval prohibited
+  effective from 1950-01-01
+  owner "Joint Director (Licensing)"
+  review_status unverified
+  review_cadence 1 year
+}
+
+approval TN.DISH.FACTORY_LICENCE {
+  title en "Factory licence"
+  summary en "The licence to run a factory, renewed annually."
+  category "licence"
+  department TN.DISH
+  jurisdiction IN.TN
+  sla 30 days
+  validity 1 year
+  renewal { notice 60 days cadence 1 year }
+  documents [ DOC.LAND_TITLE, DOC.MACHINERY_LAYOUT, DOC.WORKER_LIST ]
+  fees [ FEE.FACTORY.LICENCE ]
+  obligations [ OBL.FACTORY.ANNUAL_RETURN, OBL.FACTORY.LICENCE_RENEWAL ]
+  depends_on {
+    TN.DISH.FACTORY_PLAN {
+      reason en "The licence is granted against approved plans, so the plan approval must come first."
+    }
+  }
+  appeal { authority en "Chief Inspector of Factories" within 30 days }
+  legal_basis {
+    act "Factories Act, 1948"
+    section "6"
+    rule "Tamil Nadu Factories Rules, 1950, Rule 4"
+  }
+  deemed_approval prohibited
+  effective from 1950-01-01
+  owner "Joint Director (Licensing)"
+  review_status unverified
+  review_cadence 1 year
+}
+
+approval TN.DISH.CONTRACT_LABOUR_LICENCE {
+  title en "Contract labour licence"
+  category "licence"
+  department TN.DISH
+  jurisdiction IN.TN
+  sla 30 days
+  validity 1 year
+  renewal { notice 60 days cadence 1 year }
+  documents [ DOC.CONTRACTOR_AGREEMENT, DOC.WORKER_LIST ]
+  fees [ FEE.CONTRACT_LABOUR.LICENCE ]
+  appeal { authority en "Appellate Officer, Labour Department" within 30 days }
+  legal_basis {
+    act "Contract Labour (Regulation and Abolition) Act, 1970"
+    section "12"
+  }
+  deemed_approval prohibited
+  effective from 1971-02-10
+  owner "Joint Director (Licensing)"
+  review_status unverified
+  review_cadence 1 year
+}
+
+approval TN.TNPCB.CTE {
+  title en "Consent to establish"
+  summary en "The Board's permission to set up the unit, obtained before construction."
+  category "consent"
+  department TN.TNPCB
+  jurisdiction IN.TN
+  sla 60 days
+  validity 5 years
+  renewal { notice 90 days cadence 5 years }
+  documents [ DOC.PROJECT_REPORT, DOC.SITE_PLAN, DOC.WATER_ANALYSIS, DOC.LAND_TITLE ]
+  fees [ FEE.TNPCB.CTE ]
+  appeal { authority en "Tamil Nadu Appellate Authority under the Water and Air Acts" within 30 days }
+  legal_basis {
+    act "Water (Prevention and Control of Pollution) Act, 1974"
+    section "25"
+  }
+  deemed_approval prohibited
+  effective from 1974-03-23
+  owner "Joint Chief Environmental Engineer"
+  review_status unverified
+  review_cadence 1 year
+}
+
+approval TN.TNPCB.CTO {
+  title en "Consent to operate"
+  summary en "The Board's permission to begin and continue operating, granted after the unit is built."
+  category "consent"
+  department TN.TNPCB
+  jurisdiction IN.TN
+  sla 60 days
+  validity 5 years
+  renewal { notice 90 days cadence 5 years }
+  documents [ DOC.EFFLUENT_PLAN, DOC.WATER_ANALYSIS ]
+  fees [ FEE.TNPCB.CTO ]
+  obligations [ OBL.TNPCB.CTO_RENEWAL, OBL.TNPCB.WATER_CESS_RETURN ]
+  depends_on {
+    TN.TNPCB.CTE {
+      reason en "The Board grants consent to operate only against an existing consent to establish."
+    }
+  }
+  appeal { authority en "Tamil Nadu Appellate Authority under the Water and Air Acts" within 30 days }
+  legal_basis {
+    act "Water (Prevention and Control of Pollution) Act, 1974"
+    section "25"
+  }
+  deemed_approval prohibited
+  effective from 1974-03-23
+  owner "Joint Chief Environmental Engineer"
+  review_status unverified
+  review_cadence 1 year
+}
+
+approval TN.TNPCB.HAZWASTE_AUTHORISATION {
+  title en "Hazardous waste authorisation"
+  category "permit"
+  department TN.TNPCB
+  jurisdiction IN.TN
+  sla 60 days
+  validity 5 years
+  renewal { notice 90 days cadence 5 years }
+  documents [ DOC.HAZWASTE_PLAN ]
+  fees [ FEE.HAZWASTE.AUTHORISATION ]
+  obligations [ OBL.HAZWASTE.ANNUAL_RETURN ]
+  depends_on {
+    TN.TNPCB.CTO {
+      reason en "Authorisation is granted alongside the consent to operate the unit generating the waste."
+    }
+  }
+  appeal { authority en "Tamil Nadu Appellate Authority under the Environment Rules" within 30 days }
+  legal_basis {
+    act "Environment (Protection) Act, 1986"
+    section "8"
+    rule "Hazardous and Other Wastes (Management and Transboundary Movement) Rules, 2016, Rule 6"
+  }
+  deemed_approval prohibited
+  effective from 2016-04-04
+  owner "Joint Chief Environmental Engineer"
+  review_status unverified
+  review_cadence 1 year
+}
+
+approval IN.FSSAI.REGISTRATION {
+  title en "FSSAI registration"
+  summary en "The basic food registration for the smallest food businesses."
+  category "registration"
+  department IN.FSSAI
+  jurisdiction IN.TN
+  sla 7 days
+  validity 1 year
+  renewal { notice 30 days cadence 1 year }
+  documents [ DOC.PAN, DOC.FOOD_SAFETY_PLAN ]
+  fees [ FEE.FSSAI.REGISTRATION ]
+  obligations [ OBL.FSSAI.LICENCE_RENEWAL ]
+  appeal { authority en "Commissioner of Food Safety, Tamil Nadu" within 30 days }
+  legal_basis {
+    act "Food Safety and Standards Act, 2006"
+    section "31"
+    rule "Food Safety and Standards (Licensing and Registration of Food Businesses) Regulations, 2011, Regulation 2.1.1"
+  }
+  // Regulation 2.1.1(4) treats a registration as granted if the authority does
+  // not act within seven days of the application.
+  deemed_approval permitted section "Regulation 2.1.1(4)"
+  effective from 2011-08-05
+  owner "Designated Officer, Tamil Nadu"
+  review_status unverified
+  review_cadence 1 year
+}
+
+approval IN.FSSAI.LICENCE_STATE {
+  title en "FSSAI State licence"
+  category "licence"
+  department IN.FSSAI
+  jurisdiction IN.TN
+  sla 60 days
+  validity 1 year
+  renewal { notice 30 days cadence 1 year }
+  documents [ DOC.PAN, DOC.INCORPORATION, DOC.FOOD_SAFETY_PLAN, DOC.WATER_TEST_POTABLE, DOC.MACHINERY_LAYOUT ]
+  fees [ FEE.FSSAI.STATE ]
+  obligations [ OBL.FSSAI.ANNUAL_RETURN, OBL.FSSAI.LICENCE_RENEWAL ]
+  appeal { authority en "Commissioner of Food Safety, Tamil Nadu" within 30 days }
+  legal_basis {
+    act "Food Safety and Standards Act, 2006"
+    section "31"
+    rule "Food Safety and Standards (Licensing and Registration of Food Businesses) Regulations, 2011, Regulation 2.1.2"
+  }
+  deemed_approval prohibited
+  effective from 2011-08-05
+  owner "Designated Officer, Tamil Nadu"
+  review_status unverified
+  review_cadence 1 year
+}
+
+approval IN.FSSAI.LICENCE_CENTRAL {
+  title en "FSSAI Central licence"
+  category "licence"
+  department IN.FSSAI
+  jurisdiction IN.TN
+  sla 60 days
+  validity 1 year
+  renewal { notice 30 days cadence 1 year }
+  documents [ DOC.PAN, DOC.INCORPORATION, DOC.FOOD_SAFETY_PLAN, DOC.WATER_TEST_POTABLE, DOC.MACHINERY_LAYOUT ]
+  fees [ FEE.FSSAI.CENTRAL ]
+  obligations [ OBL.FSSAI.ANNUAL_RETURN, OBL.FSSAI.LICENCE_RENEWAL ]
+  appeal { authority en "Chief Executive Officer, FSSAI" within 30 days }
+  legal_basis {
+    act "Food Safety and Standards Act, 2006"
+    section "31"
+    rule "Food Safety and Standards (Licensing and Registration of Food Businesses) Regulations, 2011, Schedule 1"
+  }
+  deemed_approval prohibited
+  effective from 2011-08-05
+  owner "Designated Officer, Tamil Nadu"
+  review_status unverified
+  review_cadence 1 year
+}
+
+approval TN.BOILERS.REGISTRATION {
+  title en "Boiler registration and certificate to use"
+  category "registration"
+  department TN.BOILERS
+  jurisdiction IN.TN
+  sla 30 days
+  validity 1 year
+  renewal { notice 45 days cadence 1 year }
+  documents [ DOC.BOILER_DRAWINGS ]
+  fees [ FEE.BOILER.REGISTRATION ]
+  obligations [ OBL.BOILER.ANNUAL_INSPECTION ]
+  appeal { authority en "Chief Inspector of Boilers" within 30 days }
+  legal_basis {
+    act "Boilers Act, 1923"
+    section "7"
+  }
+  deemed_approval prohibited
+  effective from 1923-09-23
+  owner "Chief Inspector of Boilers"
+  review_status unverified
+  review_cadence 1 year
+}
+
+approval TN.LOCALBODY.TRADE_LICENCE {
+  title en "Trade licence"
+  category "licence"
+  department TN.LOCALBODY
+  jurisdiction IN.TN
+  sla 30 days
+  validity 1 year
+  renewal { notice 30 days cadence 1 year }
+  documents [ DOC.LOCALBODY_NOC, DOC.LAND_TITLE ]
+  fees [ FEE.TRADE.LICENCE ]
+  obligations [ OBL.TRADE.LICENCE_RENEWAL ]
+  appeal { authority en "Regional Director of Municipal Administration" within 30 days }
+  legal_basis {
+    act "Tamil Nadu District Municipalities Act, 1920"
+    section "249"
+  }
+  deemed_approval prohibited
+  effective from 1920-01-01
+  owner "Commissioner, Municipal Administration"
+  review_status unverified
+  review_cadence 1 year
+}
+
+approval IN.EPFO.REGISTRATION {
+  title en "Provident fund registration"
+  category "registration"
+  department IN.EPFO
+  jurisdiction IN.TN
+  sla 3 days
+  documents [ DOC.PAN, DOC.INCORPORATION, DOC.WORKER_LIST ]
+  obligations [ OBL.EPF.MONTHLY_ECR ]
+  legal_basis {
+    act "Employees' Provident Funds and Miscellaneous Provisions Act, 1952"
+    section "1"
+  }
+  deemed_approval prohibited
+  effective from 1952-11-15
+  owner "Regional Provident Fund Commissioner"
+  review_status unverified
+  review_cadence 1 year
+}
+
+approval IN.ESIC.REGISTRATION {
+  title en "Employees' State Insurance registration"
+  category "registration"
+  department IN.ESIC
+  jurisdiction IN.TN
+  sla 3 days
+  documents [ DOC.PAN, DOC.INCORPORATION, DOC.WORKER_LIST ]
+  obligations [ OBL.ESI.MONTHLY_CONTRIBUTION ]
+  legal_basis {
+    act "Employees' State Insurance Act, 1948"
+    section "2A"
+    rule "Employees' State Insurance (General) Regulations, 1950, Regulation 10B"
+  }
+  deemed_approval prohibited
+  effective from 1948-04-19
+  owner "Regional Director, ESIC"
+  review_status unverified
+  review_cadence 1 year
+}
+
+approval TN.LEGALMETROLOGY.PACKER {
+  title en "Registration as a packer"
+  category "registration"
+  department TN.LEGALMETROLOGY
+  jurisdiction IN.TN
+  sla 30 days
+  validity 5 years
+  renewal { notice 60 days cadence 5 years }
+  documents [ DOC.PACKAGING_DECLARATION ]
+  fees [ FEE.LEGALMETROLOGY.PACKER ]
+  obligations [ OBL.LEGALMETROLOGY.STAMPING ]
+  appeal { authority en "Controller of Legal Metrology" within 60 days }
+  legal_basis {
+    act "Legal Metrology Act, 2009"
+    section "18"
+    rule "Legal Metrology (Packaged Commodities) Rules, 2011, Rule 27"
+  }
+  deemed_approval prohibited
+  effective from 2011-04-01
+  owner "Controller of Legal Metrology"
+  review_status unverified
+  review_cadence 1 year
+}
+
+approval TN.TANGEDCO.HT_SERVICE {
+  title en "High-tension electricity service connection"
+  category "permit"
+  department TN.TANGEDCO
+  jurisdiction IN.TN
+  sla 45 days
+  documents [ DOC.LAND_TITLE, DOC.MACHINERY_LAYOUT, DOC.EB_CARD ]
+  appeal { authority en "Consumer Grievance Redressal Forum, TANGEDCO" within 30 days }
+  legal_basis {
+    act "Electricity Act, 2003"
+    section "43"
+    rule "Tamil Nadu Electricity Supply Code, 2004"
+  }
+  deemed_approval prohibited
+  effective from 2004-01-01
+  owner "Chief Engineer (Distribution)"
+  review_status unverified
+  review_cadence 1 year
+}

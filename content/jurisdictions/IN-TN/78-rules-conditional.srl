@@ -1,0 +1,138 @@
+package IN.TN
+
+// Rules that make a requirement conditional rather than universal.
+//
+// Spec 16 makes "a generic checklist shown to everyone regardless of profile"
+// an anti-requirement. Every document below is asked for only from the
+// applicants the law actually asks it of.
+
+rule R.DOC.CONSTITUTION {
+  title en "Constitution documents for registered entities"
+  kind document
+  when required(TN.DISH.FACTORY_LICENCE)
+       and (profile.entity_form == EntityForm.PRIVATE_LIMITED
+            or profile.entity_form == EntityForm.PUBLIC_LIMITED
+            or profile.entity_form == EntityForm.LLP
+            or profile.entity_form == EntityForm.COOPERATIVE)
+  then { require document DOC.INCORPORATION for TN.DISH.FACTORY_LICENCE }
+  explain en "Because the applicant is a registered body, the licensing officer needs the certificate of incorporation. A sole proprietor is not asked for one: the PAN establishes the same facts."
+  legal_basis {
+    act "Factories Act, 1948"
+    section "7"
+    rule "Tamil Nadu Factories Rules, 1950, Rule 4"
+  }
+  owner "Joint Director (Licensing)"
+  review_status unverified
+  review_cadence 1 year
+  test "a private limited company" {
+    given {
+      profile.entity_form = EntityForm.PRIVATE_LIMITED
+      profile.workers_total = 25 workers
+      profile.uses_power = true
+    }
+    expect fires
+  }
+  test "a sole proprietor" {
+    given {
+      profile.entity_form = EntityForm.PROPRIETORSHIP
+      profile.workers_total = 25 workers
+      profile.uses_power = true
+    }
+    expect not fires
+  }
+}
+
+rule R.DOC.EFFLUENT_PLAN {
+  title en "Effluent treatment plan where there is trade effluent"
+  kind document
+  when required(TN.TNPCB.CTE) and profile.effluent_discharge > 0 KLD
+  then { require document DOC.EFFLUENT_PLAN for TN.TNPCB.CTE }
+  explain en "The unit will discharge {profile.effluent_discharge} of trade effluent, so the consent application must set out how it will be treated and where it will go."
+  legal_basis {
+    act "Water (Prevention and Control of Pollution) Act, 1974"
+    section "25"
+  }
+  owner "Joint Chief Environmental Engineer"
+  review_status unverified
+  review_cadence 1 year
+  test "a wet process" {
+    given {
+      profile.pollution_category = PollutionCategory.ORANGE
+      profile.effluent_discharge = 30 KLD
+    }
+    expect fires
+  }
+  test "a dry process" {
+    given {
+      profile.pollution_category = PollutionCategory.ORANGE
+      profile.effluent_discharge = 0 KLD
+    }
+    expect not fires
+  }
+}
+
+rule R.TNPCB.LARGE_EFFLUENT {
+  title en "Large effluent discharge draws full scrutiny"
+  kind document
+  when required(TN.TNPCB.CTE) and profile.effluent_discharge >= 100 KLD
+  then {
+    require document DOC.WATER_ANALYSIS for TN.TNPCB.CTE
+    flag "large_effluent_discharge"
+  }
+  explain en "A discharge of {profile.effluent_discharge} is substantial. The Board will examine the treatment scheme in full and an inspection is mandatory before consent."
+  legal_basis {
+    act "Water (Prevention and Control of Pollution) Act, 1974"
+    section "25"
+  }
+  owner "Joint Chief Environmental Engineer"
+  review_status unverified
+  review_cadence 1 year
+  test "a large discharge" {
+    given {
+      profile.pollution_category = PollutionCategory.RED
+      profile.effluent_discharge = 150 KLD
+    }
+    expect fires
+  }
+  test "a modest discharge" {
+    given {
+      profile.pollution_category = PollutionCategory.RED
+      profile.effluent_discharge = 20 KLD
+    }
+    expect not fires
+  }
+}
+
+rule R.PLANNING.OPEN_SPACE_RESERVATION {
+  title en "Open space reservation on large plots"
+  kind document
+  when (required(TN.PLANNING.BUILDING_DTCP) or required(TN.PLANNING.BUILDING_CMDA))
+       and profile.plot_area >= 10000 m2
+  then {
+    require document DOC.SITE_PLAN for TN.PLANNING.BUILDING_DTCP
+    flag "open_space_reservation_applicable"
+  }
+  explain en "The plot is {profile.plot_area}. Development on plots of ten thousand square metres or more must reserve open space, and the site plan has to show it."
+  legal_basis {
+    act "Tamil Nadu Town and Country Planning Act, 1971"
+    section "49"
+    rule "Tamil Nadu Combined Development and Building Rules, 2019, Rule 20"
+  }
+  owner "Director of Town and Country Planning"
+  review_status unverified
+  review_cadence 1 year
+  test "a large plot" {
+    given {
+      profile.premise = point(11.01, 76.95)
+      profile.plot_area = 24000 m2
+    }
+    expect fires
+  }
+  test "a small plot" {
+    given {
+      profile.premise = point(11.01, 76.95)
+      profile.plot_area = 2400 m2
+    }
+    expect not fires
+  }
+}

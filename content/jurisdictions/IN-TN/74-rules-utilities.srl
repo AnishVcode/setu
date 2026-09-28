@@ -1,0 +1,53 @@
+package IN.TN
+
+// Boilers and electricity supply.
+
+rule R.BOILER.REGISTRATION {
+  title en "Boiler registration"
+  kind trigger
+  // A closed vessel exceeding 22.75 litres used to generate steam under
+  // pressure is a boiler within the meaning of the Act.
+  when profile.has_boiler == true and profile.boiler_capacity > 22.75 l
+  then { require approval TN.BOILERS.REGISTRATION }
+  explain en "The vessel you describe holds {profile.boiler_capacity}, above the 22.75 litre threshold in Section 2(b), so it is a boiler and must be registered and certified before it is used."
+  legal_basis {
+    act "Boilers Act, 1923"
+    section "7"
+  }
+  owner "Chief Inspector of Boilers"
+  review_status unverified
+  review_cadence 1 year
+  test "a real boiler" {
+    given { profile.has_boiler = true, profile.boiler_capacity = 500 l }
+    expect fires
+  }
+  test "a small vessel below the threshold" {
+    given { profile.has_boiler = true, profile.boiler_capacity = 20 l }
+    expect not fires
+  }
+}
+
+rule R.POWER.HT_SERVICE {
+  title en "High-tension electricity connection"
+  kind trigger
+  // Supply above 112 kW is given at high tension.
+  when profile.connected_load > 112 kW
+  then { require approval TN.TANGEDCO.HT_SERVICE }
+  explain en "A connected load of {profile.connected_load} is supplied at high tension, which is a separate application with its own feasibility study and infrastructure contribution."
+  legal_basis {
+    act "Electricity Act, 2003"
+    section "43"
+    rule "Tamil Nadu Electricity Supply Code, 2004"
+  }
+  owner "Chief Engineer (Distribution)"
+  review_status unverified
+  review_cadence 1 year
+  test "large load" {
+    given { profile.connected_load = 250 kW }
+    expect fires
+  }
+  test "small load" {
+    given { profile.connected_load = 40 kW }
+    expect not fires
+  }
+}

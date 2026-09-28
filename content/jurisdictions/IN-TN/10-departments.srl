@@ -1,0 +1,144 @@
+package IN.TN
+
+// Statutory authorities.
+//
+// adapter_tier records how SETU integrates with each one today. Spec P4 makes
+// partial adoption a first-class state: a department at the `assisted_manual`
+// tier still appears to the applicant exactly like any other, while its
+// back-office remains a structured work queue until an API exists.
+
+department TN.DTCP {
+  name en "Directorate of Town and Country Planning"
+  jurisdiction IN.TN
+  adapter_tier api
+  contact_url "https://tnlpa.tn.gov.in"
+  owner "Director of Town and Country Planning"
+  review_status unverified
+  review_cadence 1 year
+}
+
+department TN.CMDA {
+  name en "Chennai Metropolitan Development Authority"
+  jurisdiction IN.TN
+  adapter_tier api
+  owner "Member Secretary, CMDA"
+  review_status unverified
+  review_cadence 1 year
+}
+
+department TN.DISH {
+  name en "Directorate of Industrial Safety and Health"
+  jurisdiction IN.TN
+  adapter_tier api
+  owner "Joint Director (Licensing)"
+  review_status unverified
+  review_cadence 1 year
+}
+
+department TN.TNPCB {
+  name en "Tamil Nadu Pollution Control Board"
+  jurisdiction IN.TN
+  adapter_tier api
+  owner "Joint Chief Environmental Engineer"
+  review_status unverified
+  review_cadence 1 year
+}
+
+department TN.FIRE {
+  name en "Tamil Nadu Fire and Rescue Services"
+  jurisdiction IN.TN
+  adapter_tier rpa
+  owner "Director, Fire and Rescue Services"
+  review_status unverified
+  review_cadence 1 year
+}
+
+department TN.BOILERS {
+  name en "Directorate of Boilers"
+  jurisdiction IN.TN
+  adapter_tier assisted_manual
+  owner "Chief Inspector of Boilers"
+  review_status unverified
+  review_cadence 1 year
+}
+
+department IN.FSSAI {
+  name en "Food Safety and Standards Authority of India"
+  jurisdiction IN.TN
+  adapter_tier api
+  owner "Designated Officer, Tamil Nadu"
+  review_status unverified
+  review_cadence 1 year
+}
+
+department TN.LOCALBODY {
+  name en "Local body — corporation, municipality or panchayat"
+  jurisdiction IN.TN
+  adapter_tier file
+  owner "Commissioner, Municipal Administration"
+  review_status unverified
+  review_cadence 1 year
+}
+
+department IN.EPFO {
+  name en "Employees' Provident Fund Organisation"
+  jurisdiction IN.TN
+  adapter_tier api
+  owner "Regional Provident Fund Commissioner"
+  review_status unverified
+  review_cadence 1 year
+}
+
+department IN.ESIC {
+  name en "Employees' State Insurance Corporation"
+  jurisdiction IN.TN
+  adapter_tier api
+  owner "Regional Director, ESIC"
+  review_status unverified
+  review_cadence 1 year
+}
+
+department IN.GSTN {
+  name en "Goods and Services Tax Network"
+  jurisdiction IN.TN
+  adapter_tier api
+  owner "Commissioner of Commercial Taxes"
+  review_status unverified
+  review_cadence 1 year
+}
+
+department IN.MSME {
+  name en "Ministry of Micro, Small and Medium Enterprises"
+  jurisdiction IN.TN
+  adapter_tier api
+  owner "Development Commissioner (MSME)"
+  review_status unverified
+  review_cadence 1 year
+}
+
+department TN.LEGALMETROLOGY {
+  name en "Department of Legal Metrology"
+  jurisdiction IN.TN
+  adapter_tier file
+  owner "Controller of Legal Metrology"
+  review_status unverified
+  review_cadence 1 year
+}
+
+department TN.TANGEDCO {
+  name en "Tamil Nadu Generation and Distribution Corporation"
+  jurisdiction IN.TN
+  adapter_tier api
+  owner "Chief Engineer (Distribution)"
+  review_status unverified
+  review_cadence 1 year
+}
+
+department TN.MSME_DEPT {
+  name en "Micro, Small and Medium Enterprises Department, Government of Tamil Nadu"
+  jurisdiction IN.TN
+  adapter_tier api
+  owner "Secretary, MSME Department"
+  review_status unverified
+  review_cadence 1 year
+}

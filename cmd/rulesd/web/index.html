@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Set up your business — Tamil Nadu</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='25' font-size='26'>&#129534;</text></svg>">
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="top-l">
+    <span class="brand">SETU</span>
+    <span class="brand-sub" id="place">Tamil Nadu</span>
+  </div>
+  <div class="top-r">
+    <label class="fld-inline" id="lang-wrap">
+      <span>Language</span>
+      <select id="lang" aria-label="Language"></select>
+    </label>
+    <button class="btn" id="btn-theme" title="Switch between light and dark" aria-label="Switch between light and dark">◐</button>
+  </div>
+</header>
+
+<div class="shell">
+
+  <aside class="panel" id="form-panel">
+    <div class="panel-head">
+      <h2>Tell us about your business</h2>
+      <p class="panel-sub">
+        Answer what you know. You can leave anything blank — we will tell you
+        what still needs an answer and why it matters.
+      </p>
+      <div class="scenario-row">
+        <label for="scenario">Try an example</label>
+        <select id="scenario"></select>
+        <button class="btn btn-quiet" id="btn-clear" type="button">Start over</button>
+      </div>
+      <div class="progress">
+        <div class="progress-bar"><span id="progress-fill"></span></div>
+        <span class="progress-txt" id="progress-txt"></span>
+      </div>
+    </div>
+    <form id="form" autocomplete="off"></form>
+  </aside>
+
+  <main class="panel main" id="result-panel">
+    <div class="result-head">
+      <div class="stats" id="stats"></div>
+    </div>
+
+    <nav class="viewtabs" id="viewtabs" role="tablist"></nav>
+    <div class="views" id="views"></div>
+
+    <details class="about">
+      <summary>About this answer</summary>
+      <div class="about-body" id="about"></div>
+    </details>
+  </main>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+<script src="app.js"></script>
+</body>
+</html>

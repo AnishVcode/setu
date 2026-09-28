@@ -1,0 +1,100 @@
+package IN.TN
+
+// Factories Act rules.
+
+rule R.FACTORY.LICENCE.THRESHOLD {
+  title en "When premises become a factory"
+  kind trigger
+  // Section 2(m): ten or more workers with power, or twenty or more without.
+  when (profile.uses_power == true and profile.workers_total >= 10 workers)
+       or profile.workers_total >= 20 workers
+  then {
+    require approval TN.DISH.FACTORY_LICENCE
+    require approval TN.DISH.FACTORY_PLAN
+  }
+  explain en "With {profile.workers_total} on the largest shift and power-driven machinery, the premises are a factory under Section 2(m) of the Factories Act, 1948, and need a licence. The threshold is ten workers where power is used and twenty where it is not."
+  legal_basis {
+    act "Factories Act, 1948"
+    section "2(m)"
+    rule "Tamil Nadu Factories Rules, 1950, Rule 4"
+  }
+  owner "Joint Director (Licensing)"
+  review_status unverified
+  review_cadence 1 year
+  test "ten workers with power" {
+    given { profile.workers_total = 10 workers, profile.uses_power = true }
+    expect fires
+  }
+  test "twenty workers without power" {
+    given { profile.workers_total = 20 workers, profile.uses_power = false }
+    expect fires
+  }
+  test "nine workers with power" {
+    given { profile.workers_total = 9 workers, profile.uses_power = true }
+    expect not fires
+  }
+  test "nineteen workers without power" {
+    given { profile.workers_total = 19 workers, profile.uses_power = false }
+    expect not fires
+  }
+}
+
+rule R.FACTORY.NIGHT_WORK_WOMEN {
+  title en "Exemption to employ women at night"
+  kind document
+  when required(TN.DISH.FACTORY_LICENCE) and profile.employs_women_at_night == true
+  then {
+    require document DOC.WORKER_LIST for TN.DISH.FACTORY_LICENCE
+    flag "night_work_by_women"
+  }
+  explain en "You have said women will work between 10 pm and 5 am. This needs a specific exemption with prescribed safeguards for transport, security and facilities, and the licensing officer will examine the shift arrangements."
+  legal_basis {
+    act "Factories Act, 1948"
+    section "66(1)(b)"
+    rule "Tamil Nadu Factories Rules, 1950"
+  }
+  owner "Joint Director (Licensing)"
+  review_status unverified
+  review_cadence 1 year
+  // REVIEW: Tamil Nadu has notified conditional relaxations under Section 66;
+  // the conditions must be encoded before this reaches an applicant.
+  test "night work in a factory" {
+    given {
+      profile.workers_total = 40 workers
+      profile.uses_power = true
+      profile.employs_women_at_night = true
+    }
+    expect fires
+  }
+  test "no night work" {
+    given {
+      profile.workers_total = 40 workers
+      profile.uses_power = true
+      profile.employs_women_at_night = false
+    }
+    expect not fires
+  }
+}
+
+rule R.CONTRACT_LABOUR.LICENCE {
+  title en "Contract labour licence"
+  kind trigger
+  when profile.workers_contract >= 20 workers
+  then { require approval TN.DISH.CONTRACT_LABOUR_LICENCE }
+  explain en "You expect to engage {profile.workers_contract} through a contractor. An establishment engaging twenty or more contract workers on any day must be registered, and the contractor must hold a licence."
+  legal_basis {
+    act "Contract Labour (Regulation and Abolition) Act, 1970"
+    section "12"
+  }
+  owner "Joint Director (Licensing)"
+  review_status unverified
+  review_cadence 1 year
+  test "twenty contract workers" {
+    given { profile.workers_contract = 20 workers }
+    expect fires
+  }
+  test "nineteen contract workers" {
+    given { profile.workers_contract = 19 workers }
+    expect not fires
+  }
+}

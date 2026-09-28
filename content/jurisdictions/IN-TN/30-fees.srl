@@ -1,0 +1,283 @@
+package IN.TN
+
+// Fee schedules.
+//
+// A fee is a rule like any other: effective-dated, cited and versioned. A case
+// is charged the fee in force on the day it was submitted, because the ruleset
+// version is pinned at submission (P6).
+//
+// `head` is the government accounting head. It is what allows a single
+// consolidated payment by the applicant to be split correctly across
+// departments by the Payments service (spec 5.11), so it is a required field.
+//
+// REVIEW: the amounts below follow the structure of the published schedules but
+// the exact figures must be verified against the current notification for each
+// department before publication.
+
+fee FEE.PLANNING.SCRUTINY {
+  title en "Building plan scrutiny fee"
+  head "0217-80-800-01"
+  department TN.DTCP
+  amount = slab profile.built_up_area {
+    <= 300 m2   -> INR 5000
+    <= 1000 m2  -> INR 15000
+    <= 5000 m2  -> INR 40000
+    else        -> INR 100000
+  }
+  rounding nearest INR 1
+  legal_basis {
+    act "Tamil Nadu Town and Country Planning Act, 1971"
+    section "49"
+    rule "Tamil Nadu Combined Development and Building Rules, 2019"
+  }
+  owner "Director of Town and Country Planning"
+  review_status unverified
+  review_cadence 1 year
+}
+
+fee FEE.FACTORY.PLAN {
+  title en "Factory building plan approval fee"
+  head "0230-01-800-02"
+  department TN.DISH
+  amount = slab profile.built_up_area {
+    <= 500 m2  -> INR 3000
+    <= 2000 m2 -> INR 8000
+    else       -> INR 20000
+  }
+  rounding nearest INR 1
+  legal_basis {
+    act "Factories Act, 1948"
+    section "6"
+    rule "Tamil Nadu Factories Rules, 1950, Rule 3"
+  }
+  owner "Joint Director (Licensing)"
+  review_status unverified
+  review_cadence 1 year
+}
+
+fee FEE.FACTORY.LICENCE {
+  title en "Factory licence fee"
+  head "0230-01-800-01"
+  department TN.DISH
+  // The statutory scale rises with the number of workers.
+  amount = slab profile.workers_total {
+    <= 20 workers  -> INR 1500
+    <= 50 workers  -> INR 4000
+    <= 100 workers -> INR 9000
+    <= 250 workers -> INR 20000
+    else           -> INR 45000
+  }
+  rounding nearest INR 1
+  legal_basis {
+    act "Factories Act, 1948"
+    section "6"
+    rule "Tamil Nadu Factories Rules, 1950, Rule 4"
+  }
+  owner "Joint Director (Licensing)"
+  review_status unverified
+  review_cadence 1 year
+}
+
+fee FEE.TNPCB.CTE {
+  title en "Consent to establish fee"
+  head "0215-04-800-03"
+  department TN.TNPCB
+  // The Board's scale is a function of project cost.
+  amount = slab profile.investment_plant_machinery {
+    <= INR 25 lakh  -> INR 5000
+    <= INR 1 crore  -> INR 20000
+    <= INR 5 crore  -> INR 75000
+    <= INR 25 crore -> INR 250000
+    else            -> INR 600000
+  }
+  rounding nearest INR 1
+  legal_basis {
+    act "Water (Prevention and Control of Pollution) Act, 1974"
+    section "25"
+    rule "Tamil Nadu Water (Prevention and Control of Pollution) Rules, 1983"
+  }
+  owner "Joint Chief Environmental Engineer"
+  review_status unverified
+  review_cadence 1 year
+}
+
+fee FEE.TNPCB.CTO {
+  title en "Consent to operate fee"
+  head "0215-04-800-04"
+  department TN.TNPCB
+  amount = slab profile.investment_plant_machinery {
+    <= INR 25 lakh  -> INR 4000
+    <= INR 1 crore  -> INR 16000
+    <= INR 5 crore  -> INR 60000
+    <= INR 25 crore -> INR 200000
+    else            -> INR 480000
+  }
+  rounding nearest INR 1
+  legal_basis {
+    act "Water (Prevention and Control of Pollution) Act, 1974"
+    section "25"
+  }
+  owner "Joint Chief Environmental Engineer"
+  review_status unverified
+  review_cadence 1 year
+}
+
+fee FEE.FIRE.NOC {
+  title en "Fire service no-objection certificate fee"
+  head "0070-60-800-02"
+  department TN.FIRE
+  amount = slab profile.built_up_area {
+    <= 500 m2  -> INR 3000
+    <= 2000 m2 -> INR 10000
+    else       -> INR 25000
+  }
+  rounding nearest INR 1
+  legal_basis {
+    act "Tamil Nadu Fire Service Act, 1985"
+    section "13"
+  }
+  owner "Director, Fire and Rescue Services"
+  review_status unverified
+  review_cadence 1 year
+}
+
+fee FEE.FSSAI.STATE {
+  title en "FSSAI State licence fee"
+  head "0210-01-800-05"
+  department IN.FSSAI
+  amount = INR 2000
+  rounding none
+  legal_basis {
+    act "Food Safety and Standards Act, 2006"
+    section "31"
+    rule "Food Safety and Standards (Licensing and Registration of Food Businesses) Regulations, 2011, Schedule 3"
+  }
+  owner "Designated Officer, Tamil Nadu"
+  review_status unverified
+  review_cadence 1 year
+}
+
+fee FEE.FSSAI.CENTRAL {
+  title en "FSSAI Central licence fee"
+  head "0210-01-800-06"
+  department IN.FSSAI
+  amount = INR 7500
+  rounding none
+  legal_basis {
+    act "Food Safety and Standards Act, 2006"
+    section "31"
+    rule "Food Safety and Standards (Licensing and Registration of Food Businesses) Regulations, 2011, Schedule 3"
+  }
+  owner "Designated Officer, Tamil Nadu"
+  review_status unverified
+  review_cadence 1 year
+}
+
+fee FEE.FSSAI.REGISTRATION {
+  title en "FSSAI registration fee"
+  head "0210-01-800-07"
+  department IN.FSSAI
+  amount = INR 100
+  rounding none
+  legal_basis {
+    act "Food Safety and Standards Act, 2006"
+    section "31"
+    rule "Food Safety and Standards (Licensing and Registration of Food Businesses) Regulations, 2011, Regulation 2.1.1"
+  }
+  owner "Designated Officer, Tamil Nadu"
+  review_status unverified
+  review_cadence 1 year
+}
+
+fee FEE.BOILER.REGISTRATION {
+  title en "Boiler registration fee"
+  head "0230-02-800-01"
+  department TN.BOILERS
+  amount = slab profile.boiler_capacity {
+    <= 500 l   -> INR 2500
+    <= 2000 l  -> INR 6000
+    else       -> INR 15000
+  }
+  rounding nearest INR 1
+  legal_basis {
+    act "Boilers Act, 1923"
+    section "7"
+    rule "Tamil Nadu Boiler Rules"
+  }
+  owner "Chief Inspector of Boilers"
+  review_status unverified
+  review_cadence 1 year
+}
+
+fee FEE.TRADE.LICENCE {
+  title en "Trade licence fee"
+  head "0217-01-800-09"
+  department TN.LOCALBODY
+  amount = slab profile.built_up_area {
+    <= 100 m2  -> INR 1000
+    <= 500 m2  -> INR 4000
+    <= 2000 m2 -> INR 12000
+    else       -> INR 30000
+  }
+  rounding nearest INR 1
+  legal_basis {
+    act "Tamil Nadu District Municipalities Act, 1920"
+    section "249"
+  }
+  owner "Commissioner, Municipal Administration"
+  review_status unverified
+  review_cadence 1 year
+}
+
+fee FEE.LEGALMETROLOGY.PACKER {
+  title en "Packer registration fee"
+  head "0045-00-800-01"
+  department TN.LEGALMETROLOGY
+  amount = INR 500
+  rounding none
+  legal_basis {
+    act "Legal Metrology Act, 2009"
+    section "18"
+    rule "Legal Metrology (Packaged Commodities) Rules, 2011, Rule 27"
+  }
+  owner "Controller of Legal Metrology"
+  review_status unverified
+  review_cadence 1 year
+}
+
+fee FEE.HAZWASTE.AUTHORISATION {
+  title en "Hazardous waste authorisation fee"
+  head "0215-04-800-08"
+  department TN.TNPCB
+  amount = slab profile.hazardous_waste_quantity {
+    <= 10 TPA  -> INR 7500
+    <= 100 TPA -> INR 20000
+    else       -> INR 50000
+  }
+  rounding nearest INR 1
+  legal_basis {
+    act "Environment (Protection) Act, 1986"
+    section "8"
+    rule "Hazardous and Other Wastes (Management and Transboundary Movement) Rules, 2016, Rule 6"
+  }
+  owner "Joint Chief Environmental Engineer"
+  review_status unverified
+  review_cadence 1 year
+}
+
+fee FEE.CONTRACT_LABOUR.LICENCE {
+  title en "Contract labour licence fee"
+  head "0230-01-800-05"
+  department TN.DISH
+  // The statutory scale is per contract worker engaged.
+  amount = INR 60 * (profile.workers_contract / 1 workers)
+  rounding up INR 10
+  legal_basis {
+    act "Contract Labour (Regulation and Abolition) Act, 1970"
+    section "12"
+    rule "Contract Labour (Regulation and Abolition) Central Rules, 1971, Rule 26"
+  }
+  owner "Joint Director (Licensing)"
+  review_status unverified
+  review_cadence 1 year
+}

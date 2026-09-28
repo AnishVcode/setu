@@ -1,0 +1,139 @@
+package IN.TN
+
+// Pollution control and environmental rules.
+
+rule R.TNPCB.CTE {
+  title en "Consent to establish"
+  kind trigger
+  // Any industrial plant discharging trade effluent or emitting to air needs
+  // consent before it is set up. White-category units are exempted separately.
+  when profile.pollution_category == PollutionCategory.RED
+       or profile.pollution_category == PollutionCategory.ORANGE
+       or profile.pollution_category == PollutionCategory.GREEN
+  then {
+    require approval TN.TNPCB.CTE
+    require approval TN.TNPCB.CTO
+  }
+  explain en "Your activity falls in the {profile.pollution_category} category, so the Board's consent is needed before the unit is established and again before it operates."
+  legal_basis {
+    act "Water (Prevention and Control of Pollution) Act, 1974"
+    section "25"
+  }
+  owner "Joint Chief Environmental Engineer"
+  review_status unverified
+  review_cadence 1 year
+  test "orange category" {
+    given { profile.pollution_category = PollutionCategory.ORANGE }
+    expect fires
+  }
+  test "white category" {
+    given { profile.pollution_category = PollutionCategory.WHITE }
+    expect not fires
+  }
+}
+
+rule R.TNPCB.CTE.WATER_THRESHOLD {
+  title en "Consent required on water draw alone"
+  kind trigger
+  when profile.water_draw >= 25 KLD
+  then {
+    require approval TN.TNPCB.CTE
+    require approval TN.TNPCB.CTO
+  }
+  explain en "The unit will draw {profile.water_draw}, which brings it within the Board's consent regime irrespective of category."
+  legal_basis {
+    act "Water (Prevention and Control of Pollution) Act, 1974"
+    section "25"
+    rule "Tamil Nadu Water (Prevention and Control of Pollution) Rules, 1983"
+  }
+  owner "Joint Chief Environmental Engineer"
+  review_status unverified
+  review_cadence 1 year
+  test "high draw" {
+    given { profile.water_draw = 60 KLD }
+    expect fires
+  }
+  test "low draw" {
+    given { profile.water_draw = 5 KLD }
+    expect not fires
+  }
+}
+
+rule R.TNPCB.HAZWASTE {
+  title en "Hazardous waste authorisation"
+  kind trigger
+  when profile.generates_hazardous_waste == true
+  then { require approval TN.TNPCB.HAZWASTE_AUTHORISATION }
+  explain en "Any occupier who generates, stores or disposes of hazardous waste must hold an authorisation from the State Pollution Control Board."
+  legal_basis {
+    act "Environment (Protection) Act, 1986"
+    section "8"
+    rule "Hazardous and Other Wastes (Management and Transboundary Movement) Rules, 2016, Rule 6"
+  }
+  owner "Joint Chief Environmental Engineer"
+  review_status unverified
+  review_cadence 1 year
+  test "generates waste" {
+    given { profile.generates_hazardous_waste = true }
+    expect fires
+  }
+  test "no hazardous waste" {
+    given { profile.generates_hazardous_waste = false }
+    expect not fires
+  }
+}
+
+rule R.TNPCB.WATER_CESS {
+  title en "Water cess returns"
+  kind obligation
+  when required(TN.TNPCB.CTO) and profile.water_draw >= 10 KLD
+  then { create obligation OBL.TNPCB.WATER_CESS_RETURN from TN.TNPCB.CTO }
+  explain en "A unit consuming water and holding a consent must file a monthly return of water consumed and pay cess on it."
+  legal_basis {
+    act "Water (Prevention and Control of Pollution) Cess Act, 1977"
+    section "5"
+  }
+  owner "Joint Chief Environmental Engineer"
+  review_status unverified
+  review_cadence 1 year
+  test "consenting unit drawing water" {
+    given {
+      profile.pollution_category = PollutionCategory.ORANGE
+      profile.water_draw = 60 KLD
+    }
+    expect fires
+  }
+  test "white category, negligible draw" {
+    given {
+      profile.pollution_category = PollutionCategory.WHITE
+      profile.water_draw = 2 KLD
+    }
+    expect not fires
+  }
+}
+
+rule R.ECO_SENSITIVE.FLAG {
+  title en "Site inside an ecologically sensitive area"
+  kind trigger
+  when within(profile.premise, "eco_sensitive_zone")
+  then {
+    require approval TN.TNPCB.CTE
+    flag "eco_sensitive_location"
+  }
+  explain en "The site falls within a notified ecologically sensitive area, so the Board will scrutinise the application in full and an inspection is mandatory."
+  legal_basis {
+    act "Environment (Protection) Act, 1986"
+    section "3(2)(v)"
+  }
+  owner "Joint Chief Environmental Engineer"
+  review_status unverified
+  review_cadence 1 year
+  test "inside the marsh buffer" {
+    given { profile.premise = point(12.95, 80.21) }
+    expect fires
+  }
+  test "well outside it" {
+    given { profile.premise = point(11.01, 76.95) }
+    expect not fires
+  }
+}

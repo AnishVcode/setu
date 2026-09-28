@@ -1,0 +1,295 @@
+package IN.TN
+
+// Scheme eligibility.
+//
+// Every one of these runs on the same profile and the same engine as the
+// approvals, so an entitlement is as explainable and as auditable as an
+// obligation. That symmetry is the point: a platform that can tell you exactly
+// why you owe something should be able to tell you exactly why you are owed
+// something.
+
+rule R.INC.CAPITAL_SUBSIDY {
+  title en "Capital subsidy for micro and small enterprises"
+  kind incentive
+  when required(TN.UDYAM.REGISTRATION)
+       and profile.investment_plant_machinery <= INR 10 crore
+       and profile.investment_plant_machinery > INR 0
+       and profile.commencement_date <= 2027-03-31
+  then { offer incentive INC.TN.CAPITAL_SUBSIDY }
+  explain en "As a registered micro or small enterprise investing {profile.investment_plant_machinery} in plant and machinery, you may claim a capital subsidy of a quarter of that investment, capped at thirty lakh rupees."
+  legal_basis {
+    act "Tamil Nadu Micro, Small and Medium Enterprises Policy, 2021"
+    section "Capital subsidy"
+  }
+  owner "Secretary, MSME Department"
+  review_status unverified
+  review_cadence 1 year
+  test "a small food unit commencing in the policy period" {
+    given {
+      profile.investment_plant_machinery = INR 4 crore
+      profile.annual_turnover = INR 20 crore
+      profile.commencement_date = 2026-09-01
+    }
+    expect fires
+  }
+  test "too large for the scheme" {
+    given {
+      profile.investment_plant_machinery = INR 40 crore
+      profile.annual_turnover = INR 200 crore
+      profile.commencement_date = 2026-09-01
+    }
+    expect not fires
+  }
+  test "commencing after the policy period closes" {
+    given {
+      profile.investment_plant_machinery = INR 4 crore
+      profile.annual_turnover = INR 20 crore
+      profile.commencement_date = 2028-01-01
+    }
+    expect not fires
+  }
+}
+
+rule R.INC.AGRO_ADDITIONAL {
+  title en "Additional subsidy for the food processing thrust sector"
+  kind incentive
+  when required(TN.UDYAM.REGISTRATION)
+       and profile.activity in [
+         FoodActivity.FRUIT_VEGETABLE, FoodActivity.DAIRY, FoodActivity.MEAT_POULTRY,
+         FoodActivity.FISH_SEAFOOD, FoodActivity.READY_TO_EAT, FoodActivity.COLD_STORAGE
+       ]
+  then { offer incentive INC.TN.AGRO_ADDITIONAL_SUBSIDY }
+  explain en "Food processing is a thrust sector under the policy, which carries an additional capital subsidy of five per cent over and above the general subsidy."
+  legal_basis {
+    act "Tamil Nadu Micro, Small and Medium Enterprises Policy, 2021"
+    section "Thrust sector additional subsidy"
+  }
+  owner "Secretary, MSME Department"
+  review_status unverified
+  review_cadence 1 year
+  test "fruit and vegetable processing" {
+    given {
+      profile.activity = FoodActivity.FRUIT_VEGETABLE
+      profile.investment_plant_machinery = INR 4 crore
+      profile.annual_turnover = INR 20 crore
+    }
+    expect fires
+  }
+  test "a flour mill" {
+    given {
+      profile.activity = FoodActivity.FLOUR_MILL
+      profile.investment_plant_machinery = INR 4 crore
+      profile.annual_turnover = INR 20 crore
+    }
+    expect not fires
+  }
+}
+
+rule R.INC.SPECIAL_CATEGORY {
+  title en "Additional subsidy for special category entrepreneurs"
+  kind incentive
+  when required(TN.UDYAM.REGISTRATION)
+       and (profile.entrepreneur_category != EntrepreneurCategory.GENERAL
+            or profile.first_generation_entrepreneur == true)
+  then { offer incentive INC.TN.SPECIAL_CATEGORY_SUBSIDY }
+  explain en "The policy provides an additional capital subsidy for enterprises promoted by entrepreneurs in the special categories it names."
+  legal_basis {
+    act "Tamil Nadu Micro, Small and Medium Enterprises Policy, 2021"
+    section "Special category entrepreneurs"
+  }
+  owner "Secretary, MSME Department"
+  review_status unverified
+  review_cadence 1 year
+  test "woman entrepreneur" {
+    given {
+      profile.entrepreneur_category = EntrepreneurCategory.WOMEN
+      profile.first_generation_entrepreneur = false
+      profile.investment_plant_machinery = INR 4 crore
+      profile.annual_turnover = INR 20 crore
+    }
+    expect fires
+  }
+  test "first generation entrepreneur in the general category" {
+    given {
+      profile.entrepreneur_category = EntrepreneurCategory.GENERAL
+      profile.first_generation_entrepreneur = true
+      profile.investment_plant_machinery = INR 4 crore
+      profile.annual_turnover = INR 20 crore
+    }
+    expect fires
+  }
+  test "neither" {
+    given {
+      profile.entrepreneur_category = EntrepreneurCategory.GENERAL
+      profile.first_generation_entrepreneur = false
+      profile.investment_plant_machinery = INR 4 crore
+      profile.annual_turnover = INR 20 crore
+    }
+    expect not fires
+  }
+}
+
+rule R.INC.PMFME {
+  title en "Credit-linked subsidy for micro food processing enterprises"
+  kind incentive
+  when required(TN.UDYAM.REGISTRATION)
+       and profile.investment_plant_machinery <= INR 1 crore
+       and profile.incorporation_date >= 2020-06-29
+  then { offer incentive INC.IN.PMFME }
+  explain en "As a micro food processing enterprise you may claim a credit-linked capital subsidy of thirty-five per cent of the eligible project cost, capped at ten lakh rupees."
+  legal_basis {
+    act "PM Formalisation of Micro Food Processing Enterprises Scheme Guidelines"
+    section "Credit-linked capital subsidy"
+  }
+  owner "Development Commissioner (MSME)"
+  review_status unverified
+  review_cadence 1 year
+  test "a micro unit set up after the scheme began" {
+    given {
+      profile.investment_plant_machinery = INR 60 lakh
+      profile.annual_turnover = INR 3 crore
+      profile.incorporation_date = 2024-03-15
+    }
+    expect fires
+  }
+  test "a larger unit" {
+    given {
+      profile.investment_plant_machinery = INR 4 crore
+      profile.annual_turnover = INR 20 crore
+      profile.incorporation_date = 2024-03-15
+    }
+    expect not fires
+  }
+}
+
+rule R.INC.GENERATOR {
+  title en "Generator subsidy"
+  kind incentive
+  when required(TN.UDYAM.REGISTRATION) and profile.uses_diesel_generator == true
+  then { offer incentive INC.TN.GENERATOR_SUBSIDY }
+  explain en "Micro and small enterprises installing a generator set may claim a subsidy on its cost, capped at five lakh rupees."
+  legal_basis {
+    act "Tamil Nadu Micro, Small and Medium Enterprises Policy, 2021"
+    section "Generator subsidy"
+  }
+  owner "Secretary, MSME Department"
+  review_status unverified
+  review_cadence 1 year
+  test "installing a generator" {
+    given {
+      profile.uses_diesel_generator = true
+      profile.investment_plant_machinery = INR 4 crore
+      profile.annual_turnover = INR 20 crore
+    }
+    expect fires
+  }
+  test "no generator" {
+    given {
+      profile.uses_diesel_generator = false
+      profile.investment_plant_machinery = INR 4 crore
+      profile.annual_turnover = INR 20 crore
+    }
+    expect not fires
+  }
+}
+
+rule R.INC.STAMP_DUTY {
+  title en "Stamp duty concession on industrial land"
+  kind incentive
+  when required(TN.UDYAM.REGISTRATION) and profile.in_industrial_estate == true
+  then { offer incentive INC.TN.STAMP_DUTY_CONCESSION }
+  explain en "Land taken in a notified industrial estate attracts a concession on stamp duty, claimed at the time of registration of the instrument."
+  legal_basis {
+    act "Tamil Nadu Micro, Small and Medium Enterprises Policy, 2021"
+    section "Stamp duty concession"
+  }
+  owner "Secretary, MSME Department"
+  review_status unverified
+  review_cadence 1 year
+  test "land in an estate" {
+    given {
+      profile.in_industrial_estate = true
+      profile.investment_plant_machinery = INR 4 crore
+      profile.annual_turnover = INR 20 crore
+    }
+    expect fires
+  }
+  test "private land" {
+    given {
+      profile.in_industrial_estate = false
+      profile.investment_plant_machinery = INR 4 crore
+      profile.annual_turnover = INR 20 crore
+    }
+    expect not fires
+  }
+}
+
+// Documents that only some applicants need, added conditionally rather than
+// demanded of everyone. Spec 16 makes a generic checklist an anti-requirement.
+rule R.DOC.HAZWASTE_PLAN {
+  title en "Hazardous waste plan where waste is generated"
+  kind document
+  when required(TN.TNPCB.CTE) and profile.generates_hazardous_waste == true
+  then { require document DOC.HAZWASTE_PLAN for TN.TNPCB.CTE }
+  explain en "Because the process generates hazardous waste, the consent application must include the storage and disposal plan."
+  legal_basis {
+    act "Hazardous and Other Wastes (Management and Transboundary Movement) Rules, 2016"
+    section "Rule 6"
+  }
+  owner "Joint Chief Environmental Engineer"
+  review_status unverified
+  review_cadence 1 year
+  test "waste generating unit" {
+    given {
+      profile.pollution_category = PollutionCategory.ORANGE
+      profile.generates_hazardous_waste = true
+    }
+    expect fires
+  }
+  test "clean process" {
+    given {
+      profile.pollution_category = PollutionCategory.ORANGE
+      profile.generates_hazardous_waste = false
+    }
+    expect not fires
+  }
+}
+
+rule R.INC.BACKWARD_AREA {
+  title en "Additional subsidy for industrially backward districts"
+  kind incentive
+  when required(TN.UDYAM.REGISTRATION)
+       and profile.district in [
+         District.ARIYALUR, District.PERAMBALUR, District.RAMANATHAPURAM,
+         District.SIVAGANGA, District.THENI, District.TIRUVANNAMALAI,
+         District.VILUPPURAM, District.NAGAPATTINAM, District.PUDUKKOTTAI,
+         District.DHARMAPURI, District.KRISHNAGIRI, District.TENKASI
+       ]
+  then { offer incentive INC.TN.BACKWARD_AREA_SUBSIDY }
+  explain en "The district you have chosen is one the policy targets for industrial development, which carries an additional capital subsidy over the general rate."
+  legal_basis {
+    act "Tamil Nadu Micro, Small and Medium Enterprises Policy, 2021"
+    section "Industrially backward districts"
+  }
+  owner "Secretary, MSME Department"
+  review_status unverified
+  review_cadence 1 year
+  // REVIEW: the list of districts is notified separately and changes; it must be
+  // confirmed against the current notification before publication.
+  test "a targeted district" {
+    given {
+      profile.district = District.ARIYALUR
+      profile.investment_plant_machinery = INR 4 crore
+      profile.annual_turnover = INR 20 crore
+    }
+    expect fires
+  }
+  test "Coimbatore" {
+    given {
+      profile.district = District.COIMBATORE
+      profile.investment_plant_machinery = INR 4 crore
+      profile.annual_turnover = INR 20 crore
+    }
+    expect not fires
+  }
+}

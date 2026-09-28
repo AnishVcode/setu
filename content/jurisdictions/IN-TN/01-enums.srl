@@ -1,0 +1,75 @@
+package IN.TN
+
+// Districts of Tamil Nadu. The list is closed so that a rule keyed on district
+// cannot silently fail to match a misspelling, and so the what-if simulator can
+// enumerate every alternative site.
+enum District {
+  ARIYALUR CHENGALPATTU CHENNAI COIMBATORE CUDDALORE DHARMAPURI DINDIGUL
+  ERODE KALLAKURICHI KANCHIPURAM KANNIYAKUMARI KARUR KRISHNAGIRI MADURAI
+  MAYILADUTHURAI NAGAPATTINAM NAMAKKAL NILGIRIS PERAMBALUR PUDUKKOTTAI
+  RAMANATHAPURAM RANIPET SALEM SIVAGANGA TENKASI THANJAVUR THENI THOOTHUKUDI
+  TIRUCHIRAPPALLI TIRUNELVELI TIRUPATHUR TIRUPPUR TIRUVALLUR TIRUVANNAMALAI
+  TIRUVARUR VELLORE VILUPPURAM VIRUDHUNAGAR
+}
+
+// The type of local body determines which authority issues the trade licence
+// and under which Act.
+enum LocalBodyType {
+  MUNICIPAL_CORPORATION { title en "Municipal Corporation" }
+  MUNICIPALITY          { title en "Municipality" }
+  TOWN_PANCHAYAT        { title en "Town Panchayat" }
+  VILLAGE_PANCHAYAT     { title en "Village Panchayat" }
+}
+
+// The legal form of the applicant entity.
+enum EntityForm {
+  PROPRIETORSHIP  { title en "Sole proprietorship" }
+  PARTNERSHIP     { title en "Partnership firm" }
+  LLP             { title en "Limited liability partnership" }
+  PRIVATE_LIMITED { title en "Private limited company" }
+  PUBLIC_LIMITED  { title en "Public limited company" }
+  COOPERATIVE     { title en "Co-operative society" }
+}
+
+// The pollution category assigned by the Central Pollution Control Board's
+// classification and adopted by the Tamil Nadu Pollution Control Board. It
+// governs consent validity, fee scale and inspection frequency.
+enum PollutionCategory {
+  WHITE  { title en "White — non-polluting" }
+  GREEN  { title en "Green" }
+  ORANGE { title en "Orange" }
+  RED    { title en "Red" }
+}
+
+// Food processing activities in scope, at the granularity the statutes
+// distinguish.
+enum FoodActivity {
+  BAKERY                { title en "Bakery and confectionery" }
+  DAIRY                 { title en "Dairy processing" }
+  FRUIT_VEGETABLE       { title en "Fruit and vegetable processing" }
+  MEAT_POULTRY          { title en "Meat and poultry processing" }
+  FISH_SEAFOOD          { title en "Fish and seafood processing" }
+  RICE_MILL             { title en "Rice milling" }
+  FLOUR_MILL            { title en "Flour milling" }
+  OIL_MILL              { title en "Edible oil extraction" }
+  SPICE_GRINDING        { title en "Spice grinding and packing" }
+  BEVERAGE_NONALCOHOLIC { title en "Non-alcoholic beverages" }
+  READY_TO_EAT          { title en "Ready-to-eat and packaged meals" }
+  COLD_STORAGE          { title en "Cold storage and warehousing" }
+}
+
+// The entrepreneur categories that state and central schemes lawfully use to
+// target assistance.
+//
+// These are read ONLY by incentive rules. The profile variable that carries
+// them is marked `sensitive`, which excludes it from analytics exports and from
+// the risk model's feature set. Spec 5.10 prohibits the use of caste, religion,
+// gender or region of origin — or any proxy for them — in risk scoring, and
+// that prohibition is not weakened by their lawful use in disbursing benefits.
+enum EntrepreneurCategory {
+  GENERAL   { title en "General" }
+  SC_ST     { title en "Scheduled Caste or Scheduled Tribe" }
+  WOMEN     { title en "Woman entrepreneur" }
+  DIFFERENTLY_ABLED { title en "Differently abled entrepreneur" }
+  TRANSGENDER { title en "Transgender entrepreneur" }
+}

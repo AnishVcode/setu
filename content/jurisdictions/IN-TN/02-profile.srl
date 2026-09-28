@@ -1,0 +1,204 @@
+package IN.TN
+
+// The Project Profile schema.
+//
+// This is the complete set of questions the platform may ask an applicant for
+// this jurisdiction and sector, and therefore the complete input domain of the
+// rules engine. Two consequences follow, and both are enforced:
+//
+//   * A question that no rule, fee or incentive reads is a data-minimisation
+//     defect (LINT0070). We do not collect what we do not use.
+//   * Every question carries the exact wording put to the applicant when its
+//     absence leaves a determination unresolved. That wording is a legal-
+//     facing artefact, not developer text.
+profile {
+
+  // ---------- the entity ----------
+
+  var entity_form: Enum<EntityForm> {
+    group en "Your business"
+    question en "What is the legal form of the business?"
+    hint en "Choose the form the business is registered under, or intends to register under."
+  }
+
+  var incorporation_date: Date {
+    group en "Your business"
+    question en "On what date was the entity incorporated or registered?"
+    hint en "For a proprietorship with no separate registration, use the date trading began."
+  }
+
+  var entrepreneur_category: Enum<EntrepreneurCategory> {
+    group en "Your business"
+    question en "Does the promoter belong to a category eligible for targeted assistance?"
+    hint en "This is used only to identify schemes you may be entitled to. It is never used to assess your application."
+    sensitive true
+  }
+
+  var first_generation_entrepreneur: Bool {
+    group en "Your business"
+    question en "Is this the promoter's first enterprise?"
+    hint en "Several state schemes are open only to first-generation entrepreneurs."
+  }
+
+  // ---------- the premise ----------
+
+  var district: Enum<District> {
+    group en "Where it will be"
+    question en "In which district will the unit be located?"
+  }
+
+  var local_body_type: Enum<LocalBodyType> {
+    group en "Where it will be"
+    question en "What type of local body governs the site?"
+    hint en "Corporation, municipality, town panchayat or village panchayat. Your property tax receipt states this."
+  }
+
+  var premise: Geo {
+    group en "Where it will be"
+    question en "Where exactly is the site?"
+    hint en "Drop a pin on the map or give the survey number; we resolve the zone and the jurisdiction from it."
+  }
+
+  var in_industrial_estate: Bool {
+    group en "Where it will be"
+    question en "Is the site inside a notified industrial estate or park?"
+    hint en "SIPCOT, SIDCO and TIDCO estates count."
+  }
+
+  var plot_area: Quantity<Area> {
+    group en "Where it will be"
+    question en "What is the total plot area?"
+    unit m2
+    example "2400"
+  }
+
+  var built_up_area: Quantity<Area> {
+    group en "Where it will be"
+    question en "What is the total built-up area of the proposed building?"
+    unit m2
+    example "1200"
+  }
+
+  var building_height: Quantity<Length> {
+    group en "Where it will be"
+    question en "What is the height of the tallest building, measured from ground level?"
+    unit m
+  }
+
+  // ---------- the activity ----------
+
+  var activity: Enum<FoodActivity> {
+    group en "What you will make"
+    question en "What will the unit primarily make or do?"
+  }
+
+  var pollution_category: Enum<PollutionCategory> {
+    group en "What you will make"
+    question en "Which pollution category has the Board assigned to this activity?"
+    hint en "White, Green, Orange or Red, from the Board's published classification. If you are not sure, leave this blank and we will tell you what turns on it."
+  }
+
+  var commencement_date: Date {
+    group en "What you will make"
+    question en "When do you plan to start production?"
+  }
+
+  // ---------- scale ----------
+
+  var investment_plant_machinery: Money {
+    group en "Size of the operation"
+    question en "What is the investment in plant and machinery, excluding land and building?"
+    hint en "This is the figure used for MSME classification and for most capital subsidies."
+  }
+
+  var annual_turnover: Money {
+    group en "Size of the operation"
+    question en "What annual turnover do you expect in the first full year?"
+  }
+
+  var workers_total: Quantity<Count> {
+    group en "Size of the operation"
+    question en "How many workers will be employed on the largest shift?"
+    hint en "Count everyone working on the premises, including contract and casual workers."
+    unit workers
+  }
+
+  var workers_contract: Quantity<Count> {
+    group en "Size of the operation"
+    question en "How many of those will be engaged through a contractor?"
+    unit workers
+  }
+
+  var employs_women_at_night: Bool {
+    group en "Size of the operation"
+    question en "Will women be employed between 10 pm and 5 am?"
+    hint en "Night working by women needs a specific exemption with prescribed safeguards."
+  }
+
+  // ---------- utilities and process ----------
+
+  var uses_power: Bool {
+    group en "Power, water and process"
+    question en "Will you use power-driven machinery?"
+  }
+
+  var connected_load: Quantity<Power> {
+    group en "Power, water and process"
+    question en "What electrical load will you need?"
+    unit kW
+  }
+
+  var water_draw: Quantity<VolumeFlow> {
+    group en "Power, water and process"
+    question en "How much water will the unit draw each day?"
+    unit KLD
+    example "60"
+  }
+
+  var effluent_discharge: Quantity<VolumeFlow> {
+    group en "Power, water and process"
+    question en "How much trade effluent will the unit discharge each day?"
+    unit KLD
+  }
+
+  var has_boiler: Bool {
+    group en "Power, water and process"
+    question en "Will you operate a steam boiler?"
+  }
+
+  var boiler_capacity: Quantity<Volume> {
+    group en "Power, water and process"
+    question en "What is the water capacity of the boiler?"
+    unit l
+    hint en "The Boilers Act applies to any closed vessel over 22.75 litres used to generate steam under pressure."
+  }
+
+  var generates_hazardous_waste: Bool {
+    group en "Power, water and process"
+    question en "Will the process generate hazardous waste?"
+    hint en "Used oil, spent solvents, sludge from effluent treatment and contaminated packaging are common examples."
+  }
+
+  var hazardous_waste_quantity: Quantity<MassFlowYear> {
+    group en "Power, water and process"
+    question en "How much hazardous waste will be generated each year?"
+    unit TPA
+  }
+
+  var uses_diesel_generator: Bool {
+    group en "Power, water and process"
+    question en "Will you install a diesel generator?"
+  }
+
+  // ---------- market ----------
+
+  var packaged_retail_sale: Bool {
+    group en "Selling it"
+    question en "Will the product be sold pre-packaged to consumers?"
+  }
+
+  var exports: Bool {
+    group en "Selling it"
+    question en "Will any of the product be exported?"
+  }
+}

@@ -1,0 +1,203 @@
+package IN.TN
+
+// Documents and verified attributes.
+//
+// `verification` records the pathway by which a fact becomes trustworthy, in
+// the priority order of spec 5.3: an API against the source of truth first, a
+// signed DigiLocker artefact next, departmental verification third, and a
+// self-declaration with a legal undertaking only where nothing better exists.
+//
+// `max_age` is the freshness policy. A permanent fact — the date a company was
+// incorporated — is verified once, forever. A status that can change — whether
+// a GSTIN is active — is re-checked at every submission. Omitting max_age means
+// "verify once".
+
+document DOC.PAN {
+  title en "Permanent Account Number"
+  issuer "Income Tax Department"
+  verification api "NSDL_PAN"
+  credential "PANCredential"
+  attributes [ "pan", "legal_name", "entity_type" ]
+  owner "Identity and Trust team"
+  review_status unverified
+}
+
+document DOC.GSTIN {
+  title en "GST registration certificate"
+  issuer "Goods and Services Tax Network"
+  verification api "GSTN_TAXPAYER"
+  max_age 1 day
+  credential "GSTINCredential"
+  attributes [ "gstin", "legal_name", "principal_place", "status" ]
+  owner "Identity and Trust team"
+  review_status unverified
+}
+
+document DOC.INCORPORATION {
+  title en "Certificate of incorporation or registration"
+  issuer "Ministry of Corporate Affairs, or the Registrar of Firms"
+  verification api "MCA_CIN"
+  credential "IncorporationCredential"
+  attributes [ "cin", "legal_name", "incorporation_date", "registered_office" ]
+  owner "Identity and Trust team"
+  review_status unverified
+}
+
+document DOC.UDYAM {
+  title en "Udyam registration certificate"
+  issuer "Ministry of MSME"
+  verification api "UDYAM"
+  max_age 1 year
+  credential "UdyamCredential"
+  attributes [ "udyam_number", "enterprise_class", "activity" ]
+  owner "Identity and Trust team"
+  review_status unverified
+}
+
+document DOC.LAND_TITLE {
+  title en "Proof of title or lease of the site"
+  issuer "Registration Department, Tamil Nadu"
+  verification api "TN_REGISTRATION"
+  credential "LandTitleCredential"
+  attributes [ "survey_number", "extent", "owner_name", "encumbrance_status" ]
+  owner "Identity and Trust team"
+  review_status unverified
+}
+
+document DOC.SITE_PLAN {
+  title en "Site plan and building drawings"
+  issuer "Applicant's licensed surveyor or architect"
+  verification officer
+  attributes [ "plot_area_m2", "built_up_area_m2", "setbacks", "height_m" ]
+  owner "Regulatory Content Operations"
+  review_status unverified
+}
+
+document DOC.MACHINERY_LAYOUT {
+  title en "Machinery layout plan"
+  issuer "Applicant"
+  verification officer
+  attributes [ "machinery_list", "installed_power_kw", "layout" ]
+  owner "Regulatory Content Operations"
+  review_status unverified
+}
+
+document DOC.PROJECT_REPORT {
+  title en "Detailed project report"
+  issuer "Applicant"
+  verification self_declared
+  attributes [ "process_description", "raw_materials", "capacity" ]
+  owner "Regulatory Content Operations"
+  review_status unverified
+}
+
+document DOC.WATER_ANALYSIS {
+  title en "Water source analysis report"
+  issuer "A laboratory recognised by the Board"
+  verification officer
+  max_age 6 months
+  attributes [ "source", "parameters" ]
+  owner "Regulatory Content Operations"
+  review_status unverified
+}
+
+document DOC.EFFLUENT_PLAN {
+  title en "Effluent treatment and disposal plan"
+  issuer "Applicant's consultant"
+  verification officer
+  attributes [ "treatment_scheme", "disposal_route", "design_capacity_kld" ]
+  owner "Regulatory Content Operations"
+  review_status unverified
+}
+
+document DOC.FOOD_SAFETY_PLAN {
+  title en "Food safety management system plan"
+  issuer "Applicant"
+  verification officer
+  attributes [ "hazard_analysis", "control_points", "recall_plan" ]
+  owner "Regulatory Content Operations"
+  review_status unverified
+}
+
+document DOC.WATER_TEST_POTABLE {
+  title en "Potability report for the water used in processing"
+  issuer "A laboratory recognised by the food authority"
+  verification officer
+  max_age 1 year
+  attributes [ "source", "potability" ]
+  owner "Regulatory Content Operations"
+  review_status unverified
+}
+
+document DOC.BOILER_DRAWINGS {
+  title en "Boiler drawings and manufacturer's certificate"
+  issuer "Boiler manufacturer"
+  verification officer
+  attributes [ "capacity_litres", "working_pressure", "manufacture_date" ]
+  owner "Regulatory Content Operations"
+  review_status unverified
+}
+
+document DOC.FIRE_SAFETY_PLAN {
+  title en "Fire protection layout and equipment schedule"
+  issuer "Applicant's fire consultant"
+  verification officer
+  attributes [ "hydrant_layout", "extinguisher_schedule", "escape_routes" ]
+  owner "Regulatory Content Operations"
+  review_status unverified
+}
+
+document DOC.LOCALBODY_NOC {
+  title en "Local body no-objection certificate for the trade"
+  issuer "The local body governing the site"
+  verification officer
+  attributes [ "trade_description", "premises" ]
+  owner "Regulatory Content Operations"
+  review_status unverified
+}
+
+document DOC.EB_CARD {
+  title en "Electricity service connection record"
+  issuer "TANGEDCO"
+  verification api "TANGEDCO_SERVICE"
+  attributes [ "service_number", "sanctioned_load_kw", "tariff" ]
+  owner "Identity and Trust team"
+  review_status unverified
+}
+
+document DOC.WORKER_LIST {
+  title en "List of workers with age proof"
+  issuer "Applicant"
+  verification self_declared
+  max_age 1 year
+  attributes [ "worker_count", "shift_pattern" ]
+  owner "Regulatory Content Operations"
+  review_status unverified
+}
+
+document DOC.CONTRACTOR_AGREEMENT {
+  title en "Agreement with the labour contractor"
+  issuer "Applicant"
+  verification officer
+  attributes [ "contractor_name", "worker_count", "work_description" ]
+  owner "Regulatory Content Operations"
+  review_status unverified
+}
+
+document DOC.HAZWASTE_PLAN {
+  title en "Hazardous waste storage and disposal plan"
+  issuer "Applicant's consultant"
+  verification officer
+  attributes [ "waste_streams", "storage", "authorised_disposal_facility" ]
+  owner "Regulatory Content Operations"
+  review_status unverified
+}
+
+document DOC.PACKAGING_DECLARATION {
+  title en "Specimen of the package declaration"
+  issuer "Applicant"
+  verification officer
+  attributes [ "net_quantity", "mrp", "manufacturer_address" ]
+  owner "Regulatory Content Operations"
+  review_status unverified
+}

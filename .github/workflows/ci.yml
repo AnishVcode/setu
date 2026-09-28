@@ -1,0 +1,51 @@
+name: gates
+
+# The release gate of spec 12: a candidate ships only when every suite passes.
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  gates:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.22'
+
+      - name: Build and vet
+        run: |
+          go build ./...
+          go vet ./...
+
+      - name: Unit tests
+        run: go test ./... -timeout 10m
+
+      # The encoded law is checked as strictly as the code. A rule without a
+      # citation, an owner, or both a positive and a negative test case fails
+      # the build.
+      - name: Regulatory content check
+        run: go run ./cmd/setuctl check --as-of 2026-09-04 content/jurisdictions/IN-TN
+
+      - name: Authored rule tests and property suite
+        run: |
+          go run ./cmd/setuctl test --as-of 2026-09-04 \
+            --property-cases 5000 --seed 20260101 content/jurisdictions/IN-TN
+
+      # A second seed each run widens coverage over time without making a
+      # failure irreproducible: the seed is printed in the report.
+      - name: Property suite, alternate seed
+        run: |
+          go run ./cmd/setuctl test --as-of 2026-09-04 \
+            --property-cases 5000 --seed ${{ github.run_number }} content/jurisdictions/IN-TN
+
+      - name: Static analysis
+        run: go run ./cmd/setuctl analyze --as-of 2026-09-04 content/jurisdictions/IN-TN
+
+      # Any change to what the engine tells a real applicant fails here and must
+      # be approved by counsel before it can be merged.
+      - name: Golden scenarios
+        run: go test ./test/golden

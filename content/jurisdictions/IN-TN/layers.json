@@ -1,0 +1,31 @@
+{
+  "version": "2026.1-draft",
+  "source": "Illustrative boundaries. NOT SURVEYED. Replace with the authoritative layers published by the Survey and Settlement Department and the Tamil Nadu Coastal Zone Management Authority before any production use.",
+  "layers": {
+    "chennai_metropolitan_area": [
+      {
+        "name": "Chennai Metropolitan Area",
+        "ring": [
+          [12.83, 79.98], [13.28, 79.98], [13.28, 80.35],
+          [12.83, 80.35]
+        ]
+      }
+    ],
+    "coastline": [
+      {
+        "name": "Bay of Bengal shoreline — Chennai and Chengalpattu",
+        "ring": [
+          [12.60, 80.24], [13.30, 80.34], [13.30, 80.60], [12.60, 80.60]
+        ]
+      }
+    ],
+    "eco_sensitive_zone": [
+      {
+        "name": "Pallikaranai marsh buffer",
+        "ring": [
+          [12.92, 80.19], [12.98, 80.19], [12.98, 80.24], [12.92, 80.24]
+        ]
+      }
+    ]
+  }
+}

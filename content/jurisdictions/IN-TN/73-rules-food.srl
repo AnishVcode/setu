@@ -1,0 +1,115 @@
+package IN.TN
+
+// Food safety licensing.
+//
+// The three tiers are mutually exclusive, and the precedence chain makes that
+// explicit rather than leaving it to the order the rules happen to be written
+// in. Central outranks State, and State outranks registration.
+
+rule R.FSSAI.REGISTRATION {
+  title en "FSSAI registration for the smallest food businesses"
+  kind trigger
+  precedence 100
+  when profile.annual_turnover <= INR 12 lakh
+  then { require approval IN.FSSAI.REGISTRATION }
+  explain en "With an expected turnover of {profile.annual_turnover}, the business is a petty food business and needs registration rather than a licence."
+  legal_basis {
+    act "Food Safety and Standards Act, 2006"
+    section "31(2)"
+    rule "Food Safety and Standards (Licensing and Registration of Food Businesses) Regulations, 2011, Regulation 2.1.1"
+  }
+  owner "Designated Officer, Tamil Nadu"
+  review_status unverified
+  review_cadence 1 year
+  test "petty business" {
+    given { profile.annual_turnover = INR 8 lakh }
+    expect fires
+  }
+  test "above the petty threshold" {
+    given { profile.annual_turnover = INR 50 lakh }
+    expect not fires
+  }
+}
+
+rule R.FSSAI.STATE_LICENCE {
+  title en "FSSAI State licence"
+  kind trigger
+  precedence 200
+  overrides [ R.FSSAI.REGISTRATION ]
+  when profile.annual_turnover > INR 12 lakh and profile.annual_turnover <= INR 20 crore
+  then {
+    require approval IN.FSSAI.LICENCE_STATE
+    exempt approval IN.FSSAI.REGISTRATION
+  }
+  explain en "With an expected turnover of {profile.annual_turnover}, the business needs a State food licence. Registration applies only below twelve lakh rupees, and a Central licence above twenty crore."
+  legal_basis {
+    act "Food Safety and Standards Act, 2006"
+    section "31(1)"
+    rule "Food Safety and Standards (Licensing and Registration of Food Businesses) Regulations, 2011, Regulation 2.1.2"
+  }
+  owner "Designated Officer, Tamil Nadu"
+  review_status unverified
+  review_cadence 1 year
+  test "mid-sized unit" {
+    given { profile.annual_turnover = INR 5 crore }
+    expect fires
+  }
+  test "petty business" {
+    given { profile.annual_turnover = INR 8 lakh }
+    expect not fires
+  }
+}
+
+rule R.FSSAI.CENTRAL_LICENCE {
+  title en "FSSAI Central licence"
+  kind trigger
+  precedence 300
+  overrides [ R.FSSAI.STATE_LICENCE, R.FSSAI.REGISTRATION ]
+  when profile.annual_turnover > INR 20 crore or profile.exports == true
+  then {
+    require approval IN.FSSAI.LICENCE_CENTRAL
+    exempt approval IN.FSSAI.LICENCE_STATE
+    exempt approval IN.FSSAI.REGISTRATION
+  }
+  explain en "A Central licence is needed because the business exports, or because its turnover exceeds twenty crore rupees. A Central licence replaces the State licence, not adds to it."
+  legal_basis {
+    act "Food Safety and Standards Act, 2006"
+    section "31(1)"
+    rule "Food Safety and Standards (Licensing and Registration of Food Businesses) Regulations, 2011, Schedule 1"
+  }
+  owner "Designated Officer, Tamil Nadu"
+  review_status unverified
+  review_cadence 1 year
+  test "exporter" {
+    given { profile.annual_turnover = INR 3 crore, profile.exports = true }
+    expect fires
+  }
+  test "domestic mid-sized unit" {
+    given { profile.annual_turnover = INR 3 crore, profile.exports = false }
+    expect not fires
+  }
+}
+
+rule R.LEGALMETROLOGY.PACKER {
+  title en "Registration as a packer"
+  kind trigger
+  when profile.packaged_retail_sale == true
+  then { require approval TN.LEGALMETROLOGY.PACKER }
+  explain en "Anyone who pre-packs a commodity for retail sale must be registered as a packer, and each package must carry the prescribed declarations."
+  legal_basis {
+    act "Legal Metrology Act, 2009"
+    section "18"
+    rule "Legal Metrology (Packaged Commodities) Rules, 2011, Rule 27"
+  }
+  owner "Controller of Legal Metrology"
+  review_status unverified
+  review_cadence 1 year
+  test "sells packaged goods" {
+    given { profile.packaged_retail_sale = true }
+    expect fires
+  }
+  test "bulk supply only" {
+    given { profile.packaged_retail_sale = false }
+    expect not fires
+  }
+}
